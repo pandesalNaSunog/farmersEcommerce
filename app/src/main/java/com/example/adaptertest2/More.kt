@@ -1,5 +1,6 @@
 package com.example.adaptertest2
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -9,6 +10,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.cardview.widget.CardView
 import androidx.core.view.isVisible
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.net.SocketTimeoutException
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -44,9 +50,10 @@ class More : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
+        val logout = view.findViewById<CardView>(R.id.logout)
         val db = UserDatabase(requireContext())
         val user = db.getAll()
+        val token = db.getToken()
         Log.e("more", user.toString())
         val myStore = view.findViewById<CardView>(R.id.myStore)
         myStore.isVisible = user?.type == "seller"
@@ -59,6 +66,51 @@ class More : Fragment() {
                 Log.e("MOre", e.toString())
             }
 
+        }
+
+        logout.setOnClickListener {
+            AlertDialog.Builder(requireContext())
+                .setTitle("Log Out")
+                .setMessage("Are you sure you want to log out?")
+                .setPositiveButton("YES"){_,_->
+                    val progressBar = ProgressBar()
+                    val progress = progressBar.showProgressBar(requireContext(), R.layout.loading, "Logging out...", R.id.progressText)
+                    val alerts = RequestAlerts(requireContext())
+
+                    CoroutineScope(Dispatchers.IO).launch {
+                        val logoutResponse = try{ RetrofitInstance.retro.logout("Bearer $token") }
+                        catch(e: SocketTimeoutException){
+                            withContext(Dispatchers.Main){
+                                progress.dismiss()
+                                alerts.showSocketTimeOutAlert()
+                            }
+                            return@launch
+                        }catch(e: Exception){
+                            withContext(Dispatchers.Main){
+                                progress.dismiss()
+                                alerts.noInternetAlert()
+                            }
+                            return@launch
+                        }
+                        withContext(Dispatchers.Main){
+                            progress.dismiss()
+                            if(logoutResponse.code() == 200 && logoutResponse.headers().contains(Pair("content-type","application/json"))){
+                                db.deleteAll()
+                                val intent = Intent(requireContext(), MainActivity::class.java)
+                                startActivity(intent)
+                                activity?.finishAffinity()
+                            }else{
+                                AlertDialog.Builder(requireContext())
+                                    .setTitle("Error")
+                                    .setMessage("Something went wrong")
+                                    .setPositiveButton("OK", null)
+                                    .show()
+                            }
+                        }
+                    }
+                }
+                .setNegativeButton("NO", null)
+                .show()
         }
     }
 

@@ -137,4 +137,11 @@ class UserDatabase(context: Context): SQLiteOpenHelper(context, databaseName, nu
         }
         return stoken
     }
+
+    fun deleteAll(){
+        val db = this.writableDatabase
+
+        db.delete(tableName,null,null)
+        db.close()
+    }
 }
