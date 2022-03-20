@@ -22,13 +22,13 @@ class SellerRegistrationForm : AppCompatActivity() {
         val passwordMismatch = "Password mismatch"
         val storeName = findViewById<EditText>(R.id.storeName)
         val email = findViewById<EditText>(R.id.email)
-        val name = findViewById<EditText>(R.id.name)
         val password = findViewById<EditText>(R.id.password)
         val confirmPassword = findViewById<EditText>(R.id.confirmPassword)
         val coopId = findViewById<EditText>(R.id.coopId)
         val contact = findViewById<EditText>(R.id.contact)
         val signup = findViewById<Button>(R.id.signup)
         val type = intent.getSerializableExtra("type")
+        val name = findViewById<EditText>(R.id.name)
         signup.setOnClickListener {
             if(storeName.text.isEmpty()){
                 storeName.error = filloutError
@@ -46,10 +46,9 @@ class SellerRegistrationForm : AppCompatActivity() {
                 coopId.error = filloutError
             }else if(contact.text.isEmpty()){
                 contact.error = filloutError
-            }else if(name.text.toString().isEmpty()){
+            }else if(name.text.isEmpty()){
                 name.error = filloutError
-            }
-            else{
+            }else{
                 val intent = Intent(this, StoreLocation::class.java)
                 intent.putExtra("storeName", storeName.text.toString())
                 intent.putExtra("email", email.text.toString())
