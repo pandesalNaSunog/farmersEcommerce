@@ -33,4 +33,7 @@ interface Requests {
 
     @GET("/api/my-products")
     suspend fun getSellerProducts(@Header("Authorization") token: String): ProductsX
+
+    @GET("/api/store-master")
+    suspend fun getStoreMaster(): StoreMasterX
 }

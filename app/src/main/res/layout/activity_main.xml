@@ -64,6 +64,7 @@
                 android:layout_height="wrap_content">
 
                 <EditText
+                    android:inputType="textPassword"
                     android:id="@+id/password"
                     android:background="@null"
                     android:layout_width="match_parent"

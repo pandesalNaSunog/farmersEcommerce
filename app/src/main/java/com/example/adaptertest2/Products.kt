@@ -1,10 +1,21 @@
 package com.example.adaptertest2
 
+import android.app.ProgressDialog
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import okhttp3.Dispatcher
+import java.lang.Exception
+import java.net.SocketTimeoutException
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -35,6 +46,43 @@ class Products : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_products, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val storeMasterRecycler = view.findViewById<RecyclerView>(R.id.storeMasterRecycler)
+        val storeMasterAdapter = StoreMasterAdapter(mutableListOf())
+        storeMasterRecycler.adapter = storeMasterAdapter
+        storeMasterRecycler.layoutManager = LinearLayoutManager(requireContext())
+
+        val progressbar = ProgressBar()
+        val progress = progressbar.showProgressBar(requireContext(), R.layout.loading, "Loading...", R.id.progressText)
+        val alerts = RequestAlerts(requireContext())
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val storeMaster = try{ RetrofitInstance.retro.getStoreMaster() }
+            catch(e: SocketTimeoutException){
+                withContext(Dispatchers.Main){
+                    progress.dismiss()
+                    alerts.showSocketTimeOutAlert()
+                }
+                return@launch
+            }catch(e: Exception){
+                withContext(Dispatchers.Main){
+                    progress.dismiss()
+                    alerts.noInternetAlert()
+                    Log.e("Products", e.toString())
+                }
+                return@launch
+            }
+            withContext(Dispatchers.Main){
+                progress.dismiss()
+                for(i in storeMaster.indices){
+                    storeMasterAdapter.addItem(storeMaster[i])
+                }
+            }
+        }
     }
 
     companion object {

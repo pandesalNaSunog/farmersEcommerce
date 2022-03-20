@@ -1,6 +1,6 @@
 package com.example.adaptertest2
 
-data class ProductsItem(
+data class CategoryX(
     val category: String,
     val created_at: String,
     val description: String,
@@ -10,6 +10,6 @@ data class ProductsItem(
     val price: String,
     val quantity: String,
     val store_id: Int,
-    val store_owner: StoreOwnerX,
+    val store_owner: StoreOwnerXX,
     val updated_at: String
 )
