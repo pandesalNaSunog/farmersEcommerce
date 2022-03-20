@@ -10,5 +10,6 @@ data class ProductsItem(
     val price: String,
     val quantity: String,
     val store_id: Int,
+    val store_owner: StoreOwner,
     val updated_at: String
 )

@@ -30,4 +30,7 @@ interface Requests {
 
     @POST("/api/logout")
     suspend fun logout(@Header("Authorization") token: String): Response<ResponseBody>
+
+    @GET("/api/my-products")
+    suspend fun getSellerProducts(@Header("Authorization") token: String): ProductsX
 }
