@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/drawable/dark_green_button.xml" value="0.292" />
+        <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/drawable/nav_icons.xml" value="0.221" />
+        <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/drawable/profile_bg.xml" value="0.221" />
+        <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/drawable/progress_background.xml" value="0.292" />
+        <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/activity_consumer_registration_form.xml" value="0.25" />
+        <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/activity_main.xml" value="0.25" />
+        <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/activity_navigation.xml" value="0.25" />
+        <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/activity_select_user_type.xml" value="0.22" />
+        <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/activity_seller_navigation.xml" value="0.21927083333333333" />
+        <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/activity_seller_registration_form.xml" value="0.25" />
+        <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/activity_store_location.xml" value="0.5" />
+        <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/activity_verification_code.xml" value="0.25" />
+        <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/add_product_form.xml" value="0.21927083333333333" />
+        <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/address_item.xml" value="0.5" />
+        <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/fragment_home.xml" value="0.2140625" />
+        <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/fragment_more.xml" value="0.33" />
+        <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/fragment_my_account.xml" value="0.2140625" />
+        <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/fragment_my_orders.xml" value="0.21927083333333333" />
+        <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/fragment_second.xml" value="0.2140625" />
+        <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/fragment_second2.xml" value="0.2140625" />
+        <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/fragment_seller_products.xml" value="0.21927083333333333" />
+        <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/item.xml" value="0.22" />
+        <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/loading.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/product_card.xml" value="0.67" />
+        <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/submit_location_coordinates.xml" value="0.33" />
+        <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/menu/menu.xml" value="0.2140625" />
+        <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/menu/seller_menu.xml" value="0.21927083333333333" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>
