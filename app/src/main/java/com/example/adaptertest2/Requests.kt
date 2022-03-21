@@ -25,15 +25,18 @@ interface Requests {
     @POST("/api/register")
     suspend fun register(@Body request: RequestBody): Response<ResponseBody>
 
-    @GET("/api/products")
-    suspend fun getProducts(): ProductsX
-
     @POST("/api/logout")
     suspend fun logout(@Header("Authorization") token: String): Response<ResponseBody>
 
-    @GET("/api/my-products")
-    suspend fun getSellerProducts(@Header("Authorization") token: String): ProductsX
-
     @GET("/api/store-master")
-    suspend fun getStoreMaster(): StoreMasterX
+    suspend fun getStoreMaster(): StoreMaster
+
+    @GET("/api/products")
+    suspend fun getProducts(): Product
+
+    @POST("/api/add-to-cart")
+    suspend fun addToCart(@Header("Authorization") token: String, @Body request: RequestBody): Response<ResponseBody>
+
+    @GET("/api/my-products")
+    suspend fun getSellerProducts(@Header("Authorization") token: String): Product
 }

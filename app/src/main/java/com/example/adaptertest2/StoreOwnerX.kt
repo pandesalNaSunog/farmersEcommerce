@@ -2,6 +2,7 @@ package com.example.adaptertest2
 
 data class StoreOwnerX(
     val address: Any,
+    val approved_as_store_owner_at: Any,
     val coordinates: Any,
     val created_at: String,
     val email: String,

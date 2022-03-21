@@ -5,42 +5,55 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.cardview.widget.CardView
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 
-class StoreMasterAdapter(private val list: MutableList<StoreMasterItemX>): RecyclerView.Adapter<StoreMasterAdapter.Holder>() {
+class StoreMasterAdapter(private val list: MutableList<StoreMasterItem>): RecyclerView.Adapter<StoreMasterAdapter.Holder>() {
     class Holder(itemView: View): RecyclerView.ViewHolder(itemView)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
-        return Holder(LayoutInflater.from(parent.context).inflate(R.layout.store_item, parent, false))
+        return Holder(LayoutInflater.from(parent.context).inflate(R.layout.store_item,parent, false))
     }
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
         val current = list[position]
-
         holder.itemView.apply {
-            val storeName = findViewById<TextView>(R.id.storeName)
+            val name = findViewById<TextView>(R.id.storeName)
             val storeCard = findViewById<CardView>(R.id.storeCard)
-            storeName.text = current.store_name
-//            storeCard.setOnClickListener{
-//                val categoryBottomSheet = BottomSheetDialog(context)
-//                val categoryBottomSheetView = LayoutInflater.from(context).inflate(R.layout.category_bottomsheet, null)
-//                categoryBottomSheet.setContentView(categoryBottomSheetView)
-//                categoryBottomSheet.show()
-//
-//                val categoryRecycler = findViewById<RecyclerView>(R.id.categoryRecycler)
-//                val categoryAdapter = CategoryAdapter(mutableListOf())
-//                categoryRecycler.adapter = categoryAdapter
-//                categoryRecycler.layoutManager = LinearLayoutManager(context)
-//            }
+            val coopId = current.farmers_cooperative_id
+            val coopNameView = findViewById<TextView>(R.id.coopName)
+            val coopName = coopId.split("|")[1]
+
+            coopNameView.text = coopName
+            name.text = current.store_name
+
+            storeCard.setOnClickListener {
+                val categoryBottomSheet = BottomSheetDialog(context)
+                val categoryBottomSheetView = LayoutInflater.from(context).inflate(R.layout.category_bottomsheet,null)
+                categoryBottomSheet.setContentView(categoryBottomSheetView)
+                categoryBottomSheet.show()
+
+                val vegetable = categoryBottomSheetView.findViewById<CardView>(R.id.vegetable)
+                val fruit = categoryBottomSheetView.findViewById<CardView>(R.id.fruit)
+                val meat = categoryBottomSheetView.findViewById<CardView>(R.id.meat)
+                val fish = categoryBottomSheetView.findViewById<CardView>(R.id.fish)
+                val dairy = categoryBottomSheetView.findViewById<CardView>(R.id.dairy)
+                val poultry = categoryBottomSheetView.findViewById<CardView>(R.id.poultry)
+                val seeds = categoryBottomSheetView.findViewById<CardView>(R.id.seeds)
+                val plant = categoryBottomSheetView.findViewById<CardView>(R.id.plant)
+
+                vegetable.setOnClickListener {
+                }
+            }
         }
     }
+
     override fun getItemCount(): Int {
         return list.size
     }
-    fun addItem(store: StoreMasterItemX){
-        list.add(store)
+
+    fun addItem(item: StoreMasterItem){
+        list.add(item)
         notifyItemInserted(list.size - 1)
     }
 }

@@ -39,18 +39,32 @@
         app:cardCornerRadius="10dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:padding="15sp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <EditText
+            <TextView
+                android:layout_marginRight="15sp"
+                android:textSize="18sp"
+                android:layout_marginLeft="15sp"
                 android:id="@+id/category"
-                android:background="@null"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:background="@null"
                 android:hint="Category"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/categorySelector"
                 app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <android.widget.Button
+                android:id="@+id/categorySelector"
+                android:layout_width="40sp"
+                android:layout_height="40sp"
+                android:background="@drawable/no_corner_radius_green_solid_btn"
+                android:drawableRight="@drawable/ic_baseline_menu_24"
+                android:paddingRight="10sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>

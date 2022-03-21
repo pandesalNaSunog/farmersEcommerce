@@ -4,8 +4,12 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Patterns
+import android.view.LayoutInflater
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
+import androidx.cardview.widget.CardView
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -29,6 +33,60 @@ class SellerRegistrationForm : AppCompatActivity() {
         val signup = findViewById<Button>(R.id.signup)
         val type = intent.getSerializableExtra("type")
         val name = findViewById<EditText>(R.id.name)
+        val farmersCooperative = findViewById<TextView>(R.id.coop)
+        val coopSelector = findViewById<Button>(R.id.coopSelector)
+        var coopName = ""
+
+        coopSelector.setOnClickListener {
+            val bottomSheet = BottomSheetDialog(this)
+            val bottomSheetView = LayoutInflater.from(this).inflate(R.layout.cooperative_bottom_sheet, null)
+            bottomSheet.setContentView(bottomSheetView)
+            bottomSheet.show()
+
+            val agriWorkers = bottomSheetView.findViewById<CardView>(R.id.agriWorkersNetwork)
+            val landayan = bottomSheetView.findViewById<CardView>(R.id.landayan)
+            val langgam = bottomSheetView.findViewById<CardView>(R.id.langgam)
+            val pacita = bottomSheetView.findViewById<CardView>(R.id.pacita)
+            val pacitaOrg = bottomSheetView.findViewById<CardView>(R.id.pacitaOrg)
+            val sanRoque = bottomSheetView.findViewById<CardView>(R.id.sanRoque)
+            val cuyab = bottomSheetView.findViewById<CardView>(R.id.cuyab)
+
+            agriWorkers.setOnClickListener {
+                coopName = "Agri Workers Network"
+                farmersCooperative.text = coopName
+                bottomSheet.dismiss()
+            }
+            landayan.setOnClickListener {
+                coopName = "Landayan Fisheries"
+                farmersCooperative.text = coopName
+                bottomSheet.dismiss()
+            }
+            langgam.setOnClickListener {
+                coopName = "Langgam Organic Garden"
+                farmersCooperative.text = coopName
+                bottomSheet.dismiss()
+            }
+            pacita.setOnClickListener {
+                coopName = "Pacita Anahaw"
+                farmersCooperative.text = coopName
+                bottomSheet.dismiss()
+            }
+            pacitaOrg.setOnClickListener {
+                coopName = "Pacita Organic Garden"
+                farmersCooperative.text = coopName
+                bottomSheet.dismiss()
+            }
+            sanRoque.setOnClickListener {
+                coopName = "San Roque Fisheries"
+                farmersCooperative.text = coopName
+                bottomSheet.dismiss()
+            }
+            cuyab.setOnClickListener {
+                coopName = "Cuyab Fisheries"
+                farmersCooperative.text = coopName
+                bottomSheet.dismiss()
+            }
+        }
         signup.setOnClickListener {
             if(storeName.text.isEmpty()){
                 storeName.error = filloutError
@@ -44,6 +102,8 @@ class SellerRegistrationForm : AppCompatActivity() {
                 password.error = passwordMismatch
             }else if(coopId.text.isEmpty()){
                 coopId.error = filloutError
+            }else if(farmersCooperative.text.isEmpty()){
+                farmersCooperative.error = filloutError
             }else if(contact.text.isEmpty()){
                 contact.error = filloutError
             }else if(name.text.isEmpty()){
@@ -54,7 +114,7 @@ class SellerRegistrationForm : AppCompatActivity() {
                 intent.putExtra("email", email.text.toString())
                 intent.putExtra("password", password.text.toString())
                 intent.putExtra("type", type)
-                intent.putExtra("coopId", coopId.text.toString())
+                intent.putExtra("coopId", "${coopId.text}|$coopName")
                 intent.putExtra("contact", contact.text.toString())
                 intent.putExtra("name", name.text.toString())
                 startActivity(intent)
