@@ -60,7 +60,7 @@ class More : Fragment() {
         val myStore = view.findViewById<CardView>(R.id.myStore)
         myStore.isVisible = user?.type == "seller"
 
-        myCart.setOnClickListener { 
+        myCart.setOnClickListener {
             val intent = Intent(requireContext(),MyCart::class.java)
             startActivity(intent)
         }

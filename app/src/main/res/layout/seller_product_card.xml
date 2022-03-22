@@ -23,6 +23,7 @@
 
 
             <ImageView
+                android:scaleType="fitXY"
                 android:layout_margin="5sp"
                 android:id="@+id/image"
                 android:layout_width="100sp"

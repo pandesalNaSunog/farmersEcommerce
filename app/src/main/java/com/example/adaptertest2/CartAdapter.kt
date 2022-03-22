@@ -76,6 +76,7 @@ class CartAdapter(private val list: MutableList<CartItem>): RecyclerView.Adapter
                                 .setMessage("Item has been removed from your cart.")
                                 .setPositiveButton("OK", null)
                                 .show()
+                            removeItem(position)
                         }else{
                             AlertDialog.Builder(context)
                                 .setTitle("error")
@@ -96,5 +97,15 @@ class CartAdapter(private val list: MutableList<CartItem>): RecyclerView.Adapter
     fun addItem(cart: CartItem){
         list.add(cart)
         notifyItemInserted(list.size - 1)
+    }
+
+    fun removeItem(position: Int){
+        list.removeAt(position)
+        notifyDataSetChanged()
+    }
+
+    fun deleteAll(){
+        list.clear()
+        notifyDataSetChanged()
     }
 }

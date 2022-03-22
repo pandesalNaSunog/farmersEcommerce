@@ -1,12 +1,15 @@
 package com.example.adaptertest2
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -30,6 +33,8 @@ class ProductViewer : AppCompatActivity() {
         val addToCart = findViewById<Button>(R.id.addToCart)
         val db = UserDatabase(this)
         val token = db.getToken()
+        val buttons = findViewById<LinearLayout>(R.id.linearLayout2)
+        buttons.isVisible = false
 
         val image = intent.getStringExtra("image")
         val name = intent.getStringExtra("name")
@@ -43,78 +48,125 @@ class ProductViewer : AppCompatActivity() {
         priceView.text = price
         descView.text = description
 
+        var addToCartValue = "add"
 
-        val progressbar = ProgressBar()
+        val progressBar = ProgressBar()
+        var progress = progressBar.showProgressBar(this,R.layout.loading,"Loading...",R.id.progressText)
         val alerts = RequestAlerts(this)
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val cart = try{ RetrofitInstance.retro.getCartItems("Bearer $token") }
+            catch (e: SocketTimeoutException){
+                withContext(Dispatchers.Main){
+                    progress.dismiss()
+                    alerts.showSocketTimeOutAlert()
+                }
+                return@launch
+            }catch (e: Exception){
+                withContext(Dispatchers.Main){
+                    progress.dismiss()
+                    alerts.noInternetAlert()
+                }
+                return@launch
+            }
+            withContext(Dispatchers.Main){
+                progress.dismiss()
+                buttons.isVisible = true
+                for(i in cart.indices){
+                    if(id == cart[i].product_id){
+                        addToCartValue = "view"
+                        addToCart.text = "view cart"
+                        break
+                    }
+                }
+            }
+        }
         addToCart.setOnClickListener {
+            if(addToCartValue == "add") {
 
-            val addToCartAlert = AlertDialog.Builder(this)
-            val addTOCartAlertView = LayoutInflater.from(this).inflate(R.layout.quantity_selector, null)
-            addToCartAlert.setView(addTOCartAlertView)
-            addToCartAlert.show()
+                val addToCartAlert = AlertDialog.Builder(this)
+                val addTOCartAlertView =
+                    LayoutInflater.from(this).inflate(R.layout.quantity_selector, null)
+                addToCartAlert.setView(addTOCartAlertView)
+                addToCartAlert.show()
 
-            val decrease = addTOCartAlertView.findViewById<Button>(R.id.decrease)
-            val increase = addTOCartAlertView.findViewById<Button>(R.id.increase)
-            val quantityText = addTOCartAlertView.findViewById<TextView>(R.id.quantityText)
-            val confirm = addTOCartAlertView.findViewById<Button>(R.id.confirm)
-            var quantity = 1
-            quantityText.text = quantity.toString()
+                val decrease = addTOCartAlertView.findViewById<Button>(R.id.decrease)
+                val increase = addTOCartAlertView.findViewById<Button>(R.id.increase)
+                val quantityText = addTOCartAlertView.findViewById<TextView>(R.id.quantityText)
+                val confirm = addTOCartAlertView.findViewById<Button>(R.id.confirm)
+                var quantity = 1
+                quantityText.text = quantity.toString()
 
-            decrease.setOnClickListener {
-                if(quantity != 1){
-                    quantity--
-                    quantityText.text = quantity.toString()
-                }
-            }
-
-            increase.setOnClickListener {
-                if(quantity < qty!!.toInt()){
-                    quantity++
-                    quantityText.text = quantity.toString()
-                }
-            }
-
-            confirm.setOnClickListener {
-                val progress = progressbar.showProgressBar(this,R.layout.loading,"Please Wait...", R.id.progressText)
-                val jsonObject = JSONObject()
-                jsonObject.put("product_id", id)
-                jsonObject.put("quantity", quantity)
-
-                val request = jsonObject.toString().toRequestBody("application/json".toMediaTypeOrNull())
-
-                CoroutineScope(Dispatchers.IO).launch {
-                    val addToCartResponse = try{ RetrofitInstance.retro.addToCart("Bearer $token", request) }
-                    catch(e: SocketTimeoutException){
-                        withContext(Dispatchers.Main){
-                            progress.dismiss()
-                            alerts.showSocketTimeOutAlert()
-                        }
-                        return@launch
-                    }catch(e: Exception){
-                        withContext(Dispatchers.Main){
-                            progress.dismiss()
-                            alerts.noInternetAlert()
-                        }
-                        return@launch
-                    }
-
-                    withContext(Dispatchers.Main){
-                        progress.dismiss()
-                        if(addToCartResponse.code() == 200 && addToCartResponse.headers().contains(Pair("content-type","application/json"))){
-                            AlertDialog.Builder(this@ProductViewer)
-                                .setTitle("Success")
-                                .setMessage("Product has been successfully added to cart.")
-                                .setPositiveButton("OK", null)
-                                .show()
-                        }else{
-                            AlertDialog.Builder(this@ProductViewer)
-                                .setTitle("Error")
-                                .setMessage("Something went wrong.")
-                                .setPositiveButton("OK", null)
-                                .show()
-                        }
+                decrease.setOnClickListener {
+                    if (quantity != 1) {
+                        quantity--
+                        quantityText.text = quantity.toString()
                     }
                 }
+
+                increase.setOnClickListener {
+                    if (quantity < qty!!.toInt()) {
+                        quantity++
+                        quantityText.text = quantity.toString()
+                    }
+                }
+
+                confirm.setOnClickListener {
+                    progress = progressBar.showProgressBar(
+                        this,
+                        R.layout.loading,
+                        "Please Wait...",
+                        R.id.progressText
+                    )
+                    val jsonObject = JSONObject()
+                    jsonObject.put("product_id", id)
+                    jsonObject.put("quantity", quantity)
+
+                    val request =
+                        jsonObject.toString().toRequestBody("application/json".toMediaTypeOrNull())
+
+                    CoroutineScope(Dispatchers.IO).launch {
+                        val addToCartResponse = try {
+                            RetrofitInstance.retro.addToCart("Bearer $token", request)
+                        } catch (e: SocketTimeoutException) {
+                            withContext(Dispatchers.Main) {
+                                progress.dismiss()
+                                alerts.showSocketTimeOutAlert()
+                            }
+                            return@launch
+                        } catch (e: Exception) {
+                            withContext(Dispatchers.Main) {
+                                progress.dismiss()
+                                alerts.noInternetAlert()
+                            }
+                            return@launch
+                        }
+
+                        withContext(Dispatchers.Main) {
+                            progress.dismiss()
+                            if (addToCartResponse.code() == 200 && addToCartResponse.headers()
+                                    .contains(Pair("content-type", "application/json"))
+                            ) {
+                                AlertDialog.Builder(this@ProductViewer)
+                                    .setTitle("Success")
+                                    .setMessage("Product has been successfully added to cart.")
+                                    .setPositiveButton("OK", null)
+                                    .show()
+                                addToCartValue = "view"
+                                addToCart.text = "view cart"
+                            } else {
+                                AlertDialog.Builder(this@ProductViewer)
+                                    .setTitle("Error")
+                                    .setMessage("Something went wrong.")
+                                    .setPositiveButton("OK", null)
+                                    .show()
+                            }
+                        }
+                    }
+                }
+            }else{
+                val intent = Intent(this, MyCart::class.java)
+                startActivity(intent)
             }
         }
     }

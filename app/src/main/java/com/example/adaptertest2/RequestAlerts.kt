@@ -20,4 +20,11 @@ class RequestAlerts (private val context: Context){
             .setPositiveButton("OK", null)
             .show()
     }
+    fun somethingWentWrongAlert(){
+        AlertDialog.Builder(context)
+            .setTitle("Error")
+            .setMessage("Something went wrong.")
+            .setPositiveButton("OK", null)
+            .show()
+    }
 }

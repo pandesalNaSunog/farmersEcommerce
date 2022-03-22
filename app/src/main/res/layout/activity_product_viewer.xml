@@ -32,6 +32,7 @@
             android:orientation="vertical">
 
             <ImageView
+                android:scaleType="fitXY"
                 android:id="@+id/imageView"
                 android:layout_width="match_parent"
                 android:layout_height="300sp" />
