@@ -39,4 +39,10 @@ interface Requests {
 
     @GET("/api/my-products")
     suspend fun getSellerProducts(@Header("Authorization") token: String): Product
+
+    @POST("/api/remove-to-cart")
+    suspend fun removeCartItem(@Header("Authorization") token: String, @Body request: RequestBody): Response<ResponseBody>
+
+    @GET("/api/get-cart-items")
+    suspend fun getCartItems(@Header("Authorization") token: String): Cart
 }

@@ -14,6 +14,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AdapterTest2">
         <activity
+            android:name=".MyCart"
+            android:exported="false" />
+        <activity
             android:name=".ProductViewer"
             android:exported="false" />
         <activity

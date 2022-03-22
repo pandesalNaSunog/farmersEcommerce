@@ -50,6 +50,8 @@ class More : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
+        val myCart = view.findViewById<CardView>(R.id.myCart)
         val logout = view.findViewById<CardView>(R.id.logout)
         val db = UserDatabase(requireContext())
         val user = db.getAll()
@@ -57,6 +59,11 @@ class More : Fragment() {
         Log.e("more", user.toString())
         val myStore = view.findViewById<CardView>(R.id.myStore)
         myStore.isVisible = user?.type == "seller"
+
+        myCart.setOnClickListener { 
+            val intent = Intent(requireContext(),MyCart::class.java)
+            startActivity(intent)
+        }
 
         myStore.setOnClickListener {
             try{
