@@ -3,7 +3,9 @@ package com.example.adaptertest2
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
+import android.widget.LinearLayout
 import androidx.appcompat.app.AlertDialog
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.CoroutineScope
@@ -19,10 +21,11 @@ class WishList : AppCompatActivity() {
 
 
         val clearWish = findViewById<Button>(R.id.clearWish)
+        val wishIsEmpty = findViewById<LinearLayout>(R.id.wishIsEmpty)
         val db = UserDatabase(this)
         val token = db.getToken()
         val wishRecycler = findViewById<RecyclerView>(R.id.wishRecycler)
-        val wishAdapter = WishListAdapter(mutableListOf())
+        val wishAdapter = WishListAdapter(mutableListOf(), clearWish, wishIsEmpty)
         wishRecycler.adapter = wishAdapter
         wishRecycler.layoutManager = LinearLayoutManager(this)
 
@@ -51,6 +54,7 @@ class WishList : AppCompatActivity() {
                 for(i in wishList.indices){
                     wishAdapter.addItem(wishList[i])
                 }
+                clearWish.isVisible = wishList.size != 0
             }
         }
 
@@ -79,7 +83,14 @@ class WishList : AppCompatActivity() {
                         withContext(Dispatchers.Main){
                             progress.dismiss()
                             if(clearWishResponse.code() == 200 && clearWishResponse.headers().contains(Pair("content-type","application/json"))){
-                                
+                                AlertDialog.Builder(this@WishList)
+                                    .setTitle("Success")
+                                    .setMessage("Your wishlist is now empty.")
+                                    .setPositiveButton("OK", null)
+                                    .show()
+                                wishAdapter.deleteAll()
+                            }else{
+                                alerts.somethingWentWrongAlert()
                             }
                         }
                     }
