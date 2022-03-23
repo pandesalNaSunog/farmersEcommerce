@@ -54,41 +54,49 @@ class StoreMasterAdapter(private val list: MutableList<StoreMasterItem>): Recycl
                 vegetable.setOnClickListener {
                     bundle.putSerializable("productList", current.Vegetable as Serializable)
                     intent.putExtras(bundle)
+                    intent.putExtra("title", "${current.store_name} / Vegetable")
                     startActivity(context,intent,null)
                 }
                 fruit.setOnClickListener {
                     bundle.putSerializable("productList", current.Fruit as Serializable)
                     intent.putExtras(bundle)
+                    intent.putExtra("title", "${current.store_name} / Fruit")
                     startActivity(context,intent,null)
                 }
                 meat.setOnClickListener {
                     bundle.putSerializable("productList", current.Meat as Serializable)
                     intent.putExtras(bundle)
+                    intent.putExtra("title", "${current.store_name} / Meat")
                     startActivity(context,intent,null)
                 }
                 fish.setOnClickListener {
                     bundle.putSerializable("productList", current.Fish as Serializable)
                     intent.putExtras(bundle)
+                    intent.putExtra("title", "${current.store_name} / Fish")
                     startActivity(context,intent,null)
                 }
                 dairy.setOnClickListener {
                     bundle.putSerializable("productList", current.Dairy as Serializable)
                     intent.putExtras(bundle)
+                    intent.putExtra("title", "${current.store_name} / Dairy")
                     startActivity(context,intent,null)
                 }
                 poultry.setOnClickListener {
                     bundle.putSerializable("productList", current.Poultry as Serializable)
                     intent.putExtras(bundle)
+                    intent.putExtra("title", "${current.store_name} / Poultry")
                     startActivity(context,intent,null)
                 }
                 seeds.setOnClickListener {
                     bundle.putSerializable("productList", current.Seeds as Serializable)
                     intent.putExtras(bundle)
+                    intent.putExtra("title", "${current.store_name} / Seeds")
                     startActivity(context,intent,null)
                 }
                 plant.setOnClickListener {
                     bundle.putSerializable("productList", current.Plant as Serializable)
                     intent.putExtras(bundle)
+                    intent.putExtra("title", "${current.store_name} / Plant")
                     startActivity(context,intent,null)
                 }
             }

@@ -66,4 +66,10 @@ interface Requests {
 
     @POST("/api/remove-to-wishlist")
     suspend fun removeToWishList(@Header("Authorization") token: String, @Body request: RequestBody): Response<ResponseBody>
+
+    @GET("/api/orders")
+    suspend fun getOrders(@Header("Authorization") token: String): Orders
+
+    @POST("/api/checkout")
+    suspend fun checkOut(@Header("Authorization") token: String, @Body request: RequestBody): Response<ResponseBody>
 }

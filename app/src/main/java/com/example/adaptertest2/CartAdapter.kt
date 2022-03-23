@@ -4,10 +4,7 @@ import android.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
+import android.widget.*
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -20,7 +17,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
 import java.net.SocketTimeoutException
 
-class CartAdapter(private val list: MutableList<CartItem>, private val clearCart: Button, private val cartIsEmpty: LinearLayout): RecyclerView.Adapter<CartAdapter.Holder>() {
+class CartAdapter(private val list: MutableList<CartItem>, private val clearCart: GridLayout, private val cartIsEmpty: LinearLayout): RecyclerView.Adapter<CartAdapter.Holder>() {
     class Holder(itemView: View): RecyclerView.ViewHolder(itemView)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {

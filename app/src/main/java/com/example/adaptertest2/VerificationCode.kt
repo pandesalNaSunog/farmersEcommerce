@@ -63,34 +63,34 @@ class VerificationCode : AppCompatActivity() {
         }
 
         one.setOnClickListener {
-            inputCode(code, "1", type!!, contact!!, codeAttemptLimit, codeAttempts)
+            inputCode(code, "1", type, contact!!, codeAttemptLimit, codeAttempts)
         }
         two.setOnClickListener {
-            inputCode(code, "2", type!!, contact!!, codeAttemptLimit, codeAttempts)
+            inputCode(code, "2", type, contact!!, codeAttemptLimit, codeAttempts)
         }
         three.setOnClickListener {
-            inputCode(code, "3", type!!, contact!!, codeAttemptLimit, codeAttempts)
+            inputCode(code, "3", type, contact!!, codeAttemptLimit, codeAttempts)
         }
         four.setOnClickListener {
-            inputCode(code, "4", type!!, contact!!, codeAttemptLimit, codeAttempts)
+            inputCode(code, "4", type, contact!!, codeAttemptLimit, codeAttempts)
         }
         five.setOnClickListener {
-            inputCode(code, "5", type!!, contact!!, codeAttemptLimit, codeAttempts)
+            inputCode(code, "5", type, contact!!, codeAttemptLimit, codeAttempts)
         }
         six.setOnClickListener {
-            inputCode(code, "6", type!!, contact!!, codeAttemptLimit, codeAttempts)
+            inputCode(code, "6", type, contact!!, codeAttemptLimit, codeAttempts)
         }
         seven.setOnClickListener {
-            inputCode(code, "7", type!!, contact!!, codeAttemptLimit, codeAttempts)
+            inputCode(code, "7", type, contact!!, codeAttemptLimit, codeAttempts)
         }
         eight.setOnClickListener {
-            inputCode(code, "8", type!!, contact!!, codeAttemptLimit, codeAttempts)
+            inputCode(code, "8", type, contact!!, codeAttemptLimit, codeAttempts)
         }
         nine.setOnClickListener {
-            inputCode(code, "9", type!!, contact!!, codeAttemptLimit, codeAttempts)
+            inputCode(code, "9", type, contact!!, codeAttemptLimit, codeAttempts)
         }
         zero.setOnClickListener {
-            inputCode(code, "0", type!!, contact!!, codeAttemptLimit, codeAttempts)
+            inputCode(code, "0", type, contact!!, codeAttemptLimit, codeAttempts)
         }
 
         countDown = object: CountDownTimer(200000, 1000){

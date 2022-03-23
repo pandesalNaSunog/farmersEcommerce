@@ -31,7 +31,7 @@ class SellerRegistrationForm : AppCompatActivity() {
         val coopId = findViewById<EditText>(R.id.coopId)
         val contact = findViewById<EditText>(R.id.contact)
         val signup = findViewById<Button>(R.id.signup)
-        val type = intent.getSerializableExtra("type")
+        val type = intent.getStringExtra("type")
         val name = findViewById<EditText>(R.id.name)
         val farmersCooperative = findViewById<TextView>(R.id.coop)
         val coopSelector = findViewById<Button>(R.id.coopSelector)

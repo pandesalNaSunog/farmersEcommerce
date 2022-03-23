@@ -1,5 +1,6 @@
 package com.example.adaptertest2
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
@@ -19,7 +20,7 @@ class WishList : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_wish_list)
 
-
+        val shopNow = findViewById<Button>(R.id.shopNow)
         val clearWish = findViewById<Button>(R.id.clearWish)
         val wishIsEmpty = findViewById<LinearLayout>(R.id.wishIsEmpty)
         val db = UserDatabase(this)
@@ -28,6 +29,11 @@ class WishList : AppCompatActivity() {
         val wishAdapter = WishListAdapter(mutableListOf(), clearWish, wishIsEmpty)
         wishRecycler.adapter = wishAdapter
         wishRecycler.layoutManager = LinearLayoutManager(this)
+        shopNow.setOnClickListener {
+            val intent = Intent(this, Navigation::class.java)
+            startActivity(intent)
+            finishAffinity()
+        }
 
         val progressBar = ProgressBar()
         var progress = progressBar.showProgressBar(this, R.layout.loading,"Loading...",R.id.progressText)

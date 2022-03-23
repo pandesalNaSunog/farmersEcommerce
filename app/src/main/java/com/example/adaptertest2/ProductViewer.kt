@@ -27,6 +27,7 @@ class ProductViewer : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_product_viewer)
 
+        val available = findViewById<TextView>(R.id.quantity)
         val imageView = findViewById<ImageView>(R.id.imageView)
         val nameView = findViewById<TextView>(R.id.nameView)
         val priceView = findViewById<TextView>(R.id.priceView)
@@ -51,9 +52,10 @@ class ProductViewer : AppCompatActivity() {
         nameView.text = name
         priceView.text = price
         descView.text = description
+        available.text = "Available: $qty"
 
         var addToCartValue = "add"
-
+        var wishListValue = "add"
         val progressBar = ProgressBar()
         var progress = progressBar.showProgressBar(this,R.layout.loading,"Loading...",R.id.progressText)
         val alerts = RequestAlerts(this)
@@ -86,40 +88,89 @@ class ProductViewer : AppCompatActivity() {
             }
         }
 
-        addToWishList.setOnClickListener {
-            progress = progressBar.showProgressBar(this,R.layout.loading,"Please Wait...",R.id.progressText)
-            val jsonObject = JSONObject()
-            jsonObject.put("product_id", id)
-            val request = jsonObject.toString().toRequestBody("application/json".toMediaTypeOrNull())
-            CoroutineScope(Dispatchers.IO).launch {
-                val wishListResponse = try{ RetrofitInstance.retro.addToWishList("Bearer $token",request) }
-                catch(e: SocketTimeoutException){
-                    withContext(Dispatchers.Main){
-                        progress.dismiss()
-                        alerts.showSocketTimeOutAlert()
-                    }
-                    return@launch
-                }catch (e: Exception){
-                    withContext(Dispatchers.Main){
-                        progress.dismiss()
-                        alerts.noInternetAlert()
-                    }
-                    return@launch
-                }
+        val progre = ProgressBar()
+        var prog = progre.showProgressBar(this,R.layout.loading,"Loading...",R.id.progressText)
+        val alert = RequestAlerts(this)
 
+        CoroutineScope(Dispatchers.IO).launch {
+            val wish = try{ RetrofitInstance.retro.getWishList("Bearer $token") }
+            catch (e: SocketTimeoutException){
                 withContext(Dispatchers.Main){
-                    progress.dismiss()
-                    if(wishListResponse.code() == 200 && wishListResponse.headers().contains(Pair("content-type","application/json"))){
-                        AlertDialog.Builder(this@ProductViewer)
-                            .setTitle("Success")
-                            .setMessage("Product has been added to your wishlist.")
-                            .setPositiveButton("OK", null)
-                            .show()
-                    }else{
-                        alerts.somethingWentWrongAlert()
-                        Log.e("viewer", wishListResponse.errorBody().toString())
+                    prog.dismiss()
+                    alert.showSocketTimeOutAlert()
+                }
+                return@launch
+            }catch (e: Exception){
+                withContext(Dispatchers.Main){
+                    prog.dismiss()
+                    alert.noInternetAlert()
+                }
+                return@launch
+            }
+            withContext(Dispatchers.Main){
+                prog.dismiss()
+                buttons.isVisible = true
+                for(i in wish.indices){
+                    if(id == wish[i].product_id){
+                        wishListValue = "view"
+                        addToWishList.text = "view wishlist"
+                        break
                     }
                 }
+            }
+        }
+
+        addToWishList.setOnClickListener {
+            if(wishListValue == "add") {
+                progress = progressBar.showProgressBar(
+                    this,
+                    R.layout.loading,
+                    "Please Wait...",
+                    R.id.progressText
+                )
+                val jsonObject = JSONObject()
+                jsonObject.put("product_id", id)
+                val request =
+                    jsonObject.toString().toRequestBody("application/json".toMediaTypeOrNull())
+                CoroutineScope(Dispatchers.IO).launch {
+                    val wishListResponse = try {
+                        RetrofitInstance.retro.addToWishList("Bearer $token", request)
+                    } catch (e: SocketTimeoutException) {
+                        withContext(Dispatchers.Main) {
+                            progress.dismiss()
+                            alerts.showSocketTimeOutAlert()
+                        }
+                        return@launch
+                    } catch (e: Exception) {
+                        withContext(Dispatchers.Main) {
+                            progress.dismiss()
+                            alerts.noInternetAlert()
+                        }
+                        return@launch
+                    }
+
+                    withContext(Dispatchers.Main) {
+                        progress.dismiss()
+                        if (wishListResponse.code() == 200 && wishListResponse.headers()
+                                .contains(Pair("content-type", "application/json"))
+                        ) {
+                            AlertDialog.Builder(this@ProductViewer)
+                                .setTitle("Success")
+                                .setMessage("Product has been added to your wishlist.")
+                                .setPositiveButton("OK", null)
+                                .show()
+                            wishListValue = "view"
+                            addToWishList.text = "view wishlist"
+                        } else {
+                            alerts.somethingWentWrongAlert()
+                            Log.e("viewer", wishListResponse.errorBody().toString())
+                        }
+                    }
+                }
+            }else{
+                val intent = Intent(this, WishList::class.java)
+                startActivity(intent)
+                finish()
             }
         }
         addToCart.setOnClickListener {

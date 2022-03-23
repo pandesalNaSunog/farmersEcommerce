@@ -7,6 +7,7 @@ import android.util.Log
 import android.util.Patterns
 import android.widget.Button
 import android.widget.EditText
+import androidx.appcompat.app.AlertDialog
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
 import kotlinx.coroutines.CoroutineScope
@@ -34,7 +35,7 @@ class ConsumerRegistrationForm : AppCompatActivity() {
         val address = findViewById<EditText>(R.id.address)
         val contact = findViewById<EditText>(R.id.contact)
         val signup = findViewById<Button>(R.id.signup)
-        val type = intent.getSerializableExtra("type")
+        val type = intent.getStringExtra("type")
         signup.setOnClickListener {
             if(name.text.isEmpty()){
                 name.error = filloutError
@@ -63,10 +64,11 @@ class ConsumerRegistrationForm : AppCompatActivity() {
                 jsonObject.put("password", password.text.toString())
                 jsonObject.put("type", type)
                 jsonObject.put("address", address.text.toString())
-                jsonObject.put("contact", contact.text.toString())
+                jsonObject.put("phone", contact.text.toString())
 
                 val request = jsonObject.toString().toRequestBody("application/json".toMediaTypeOrNull())
 
+                Log.e("jakljaf", jsonObject.toString())
                 CoroutineScope(Dispatchers.IO).launch {
                     val registrationResponse = try{ RetrofitInstance.retro.register(request) }
                     catch(e: SocketTimeoutException){
@@ -84,14 +86,22 @@ class ConsumerRegistrationForm : AppCompatActivity() {
                     }
 
                     withContext(Dispatchers.Main){
-                        if(registrationResponse.isSuccessful){
+                        progress.dismiss()
+                        if(registrationResponse.code() == 200 && registrationResponse.headers().contains(Pair("content-type","application/json"))){
                             val gson = GsonBuilder().setPrettyPrinting().create()
                             val json = gson.toJson(JsonParser.parseString(registrationResponse.body()?.string()))
                             Log.e("reg", json)
 
                             val intent = Intent(this@ConsumerRegistrationForm, VerificationCode::class.java)
+                            intent.putExtra("contact", contact.text.toString())
                             startActivity(intent)
                             finish()
+                        }else{
+                            AlertDialog.Builder(this@ConsumerRegistrationForm)
+                                .setTitle("Error")
+                                .setMessage("Something went wrong.")
+                                .setPositiveButton("OK", null)
+                                .show()
                         }
                     }
                 }

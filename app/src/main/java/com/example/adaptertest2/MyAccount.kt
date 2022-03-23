@@ -181,7 +181,7 @@ class MyAccount : Fragment() {
             }
 
             if(storeName.text.isEmpty()){
-                storeName.setText(user!!.store_name)
+                    storeName.setText(user!!.store_name)
             }
 
             if(address.text.isEmpty()){
@@ -192,7 +192,9 @@ class MyAccount : Fragment() {
                 updateEmail.setText(user!!.email)
             }
             if(coopId.text.isEmpty()){
-                coopId.setText(user!!.farmers_cooperative_id?.split("|")?.get(0))
+                if(user!!.farmers_cooperative_id != "") {
+                    coopId.setText(user!!.farmers_cooperative_id?.split("|")?.get(0))
+                }
             }
 
             if(contact.text.isEmpty()){
@@ -203,7 +205,9 @@ class MyAccount : Fragment() {
                 updateName.setText(user!!.name)
             }
             if(farmersCooperative.text.isEmpty()){
-                farmersCooperative.text = user!!.farmers_cooperative_id?.split("|")?.get(1)
+                if(user!!.farmers_cooperative_id != "") {
+                    farmersCooperative.text = user!!.farmers_cooperative_id?.split("|")?.get(1)
+                }
             }
 
             update.setOnClickListener {
@@ -260,7 +264,10 @@ class MyAccount : Fragment() {
                                     .setMessage("Your profile has been updated.")
                                     .setPositiveButton("OK", null)
                                     .show()
+                                bottomSheet.dismiss()
 
+                            }else{
+                                alerts.somethingWentWrongAlert()
                             }
                         }
                     }
