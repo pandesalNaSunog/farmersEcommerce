@@ -53,7 +53,7 @@ interface Requests {
     suspend fun addToWishList(@Header("Authorization") token: String, @Body request: RequestBody): Response<ResponseBody>
 
     @GET("/api/get-wishlist")
-    suspend fun getWishList(@Header("Authorization") token: String)
+    suspend fun getWishList(@Header("Authorization") token: String): WishListItems
 
     @POST("/api/update-profile")
     suspend fun updateProfile(@Header("Authorization") token: String, @Body request: RequestBody): Response<ResponseBody>

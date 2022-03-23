@@ -50,7 +50,7 @@ class More : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
+        val wishList = view.findViewById<CardView>(R.id.wishList)
         val myCart = view.findViewById<CardView>(R.id.myCart)
         val logout = view.findViewById<CardView>(R.id.logout)
         val db = UserDatabase(requireContext())
@@ -63,6 +63,11 @@ class More : Fragment() {
         myCart.setOnClickListener {
             val intent = Intent(requireContext(),MyCart::class.java)
             startActivity(intent)
+        }
+
+        wishList.setOnClickListener {
+            val inent = Intent(requireContext(), WishList::class.java)
+            startActivity(inent)
         }
 
         myStore.setOnClickListener {

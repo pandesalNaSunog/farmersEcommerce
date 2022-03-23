@@ -266,10 +266,11 @@ class SellerProducts : Fragment() {
                             Log.e("seller", json)
 
                             val jsonResponse = JSONTokener(json).nextValue() as JSONObject
-
-                            val thisId = jsonResponse.getInt("id")
+                            val productJson = jsonResponse.getJSONObject("product")
+                            val thisId = productJson.getInt("id")
+                            val thisImage = productJson.getString("image")
                             showAlert.dismiss()
-                            val product = ProductItemX(category,null,sdescription,thisId,image,name,sprice.toString(),squantity.toString(),null,null,null)
+                            val product = ProductItemX(category,null,sdescription,thisId,thisImage,name,sprice.toString(),squantity.toString(),null,null,null)
                             productAdapter.addItem(product)
                             AlertDialog.Builder(requireContext())
                                 .setTitle("Success!")

@@ -8,7 +8,7 @@
         app:cardCornerRadius="10sp"
         app:cardElevation="10sp"
         android:layout_margin="10sp"
-        android:id="@+id/cartItemCard"
+        android:id="@+id/wishlistItemCard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -60,10 +60,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="30sp"
                     android:layout_margin="10sp"
-                    android:background="@drawable/dark_green_button"
+                    android:background="@drawable/green_stroke_btn"
                     android:text="Remove"
                     android:textAllCaps="false"
-                    android:textColor="@color/white" />
+                    android:textColor="@color/darkGreen" />
             </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
