@@ -3,7 +3,8 @@
     android:orientation="vertical"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:padding="10sp">
 
     <TextView
         android:layout_width="match_parent"
@@ -14,7 +15,8 @@
         android:textSize="20sp"/>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-
+        android:paddingRight="20sp"
+        android:paddingLeft="20sp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -22,8 +24,8 @@
             android:textColor="@color/white"
             android:textSize="30sp"
             android:id="@+id/decrease"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="70sp"
+            android:layout_height="40sp"
             android:layout_marginLeft="5sp"
             android:layout_marginTop="5sp"
             android:layout_marginBottom="5sp"
@@ -47,8 +49,8 @@
 
         <android.widget.Button
             android:id="@+id/increase"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="70sp"
+            android:layout_height="40sp"
             android:layout_marginRight="5sp"
             android:background="@drawable/green_solid_btn"
             android:text="+"

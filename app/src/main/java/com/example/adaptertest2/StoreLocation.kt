@@ -83,12 +83,14 @@ class StoreLocation : AppCompatActivity() {
                                         progress.dismiss()
                                         alerts.showSocketTimeOutAlert()
                                     }
+                                    Log.e("location", e.toString())
                                     return@launch
                                 }catch(e: Exception){
                                     withContext(Dispatchers.Main){
                                         progress.dismiss()
                                         alerts.noInternetAlert()
                                     }
+                                    Log.e("location", e.toString())
                                     return@launch
                                 }
 
