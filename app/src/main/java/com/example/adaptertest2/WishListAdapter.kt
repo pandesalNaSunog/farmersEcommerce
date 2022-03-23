@@ -34,4 +34,9 @@ class WishListAdapter(private val list: MutableList<WishListItemsItem>): Recycle
     override fun getItemCount(): Int {
         return list.size
     }
+
+    fun addItem(item: WishListItemsItem){
+        list.add(item)
+        notifyItemInserted(list.size - 1)
+    }
 }

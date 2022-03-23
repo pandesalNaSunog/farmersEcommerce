@@ -60,4 +60,7 @@ interface Requests {
 
     @GET("/api/my-profile")
     suspend fun getMyProfile(@Header("Authorization") token: String): Profile
+
+    @POST("/api/clear-wishlist")
+    suspend fun clearWishList(@Header("Authorization") token: String): Response<ResponseBody>
 }
