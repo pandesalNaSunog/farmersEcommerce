@@ -14,6 +14,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AdapterTest2">
         <activity
+            android:name=".WishList"
+            android:exported="false" />
+        <activity
+            android:name=".ProductsPerCategory"
+            android:exported="false" />
+        <activity
             android:name=".MyCart"
             android:exported="false" />
         <activity

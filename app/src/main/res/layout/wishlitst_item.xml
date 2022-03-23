@@ -6,7 +6,7 @@
 
     <androidx.cardview.widget.CardView
         app:cardCornerRadius="10sp"
-        app:cardElevation="5sp"
+        app:cardElevation="10sp"
         android:layout_margin="10sp"
         android:id="@+id/cartItemCard"
         android:layout_width="match_parent"
@@ -54,47 +54,6 @@
                     android:layout_height="wrap_content"
                     android:text="Product Name"
                     android:textSize="20sp" />
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_marginTop="10sp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <android.widget.Button
-                        android:id="@+id/decrease"
-                        android:layout_width="50sp"
-                        android:layout_height="30sp"
-                        android:background="@drawable/green_solid_btn"
-                        android:text="-"
-                        android:textColor="@color/white"
-                        android:textSize="20sp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <TextView
-                        android:id="@+id/quantity"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:text="5"
-                        android:textAlignment="center"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@+id/increase"
-                        app:layout_constraintStart_toEndOf="@+id/decrease"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <android.widget.Button
-                        android:id="@+id/increase"
-                        android:layout_width="50sp"
-                        android:layout_height="30sp"
-                        android:background="@drawable/green_solid_btn"
-                        android:text="+"
-                        android:textColor="@color/white"
-                        android:textSize="20sp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-                </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <android.widget.Button
                     android:id="@+id/remove"

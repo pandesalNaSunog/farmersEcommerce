@@ -3,6 +3,7 @@ package com.example.adaptertest2
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.widget.Button
 import android.widget.ImageView
@@ -36,12 +37,15 @@ class ProductViewer : AppCompatActivity() {
         val buttons = findViewById<LinearLayout>(R.id.linearLayout2)
         buttons.isVisible = false
 
+        val addToWishList = findViewById<Button>(R.id.addToWishList)
+
         val image = intent.getStringExtra("image")
         val name = intent.getStringExtra("name")
         val price = intent.getStringExtra("price")
         val description = intent.getStringExtra("desc")
         val id = intent.getIntExtra("id",0)
         val qty = intent.getStringExtra("quantity")
+        Log.e("id", id.toString())
 
         Glide.with(this).load("https://yourzaj.xyz/$image").into(imageView)
         nameView.text = name
@@ -81,6 +85,43 @@ class ProductViewer : AppCompatActivity() {
                 }
             }
         }
+
+        addToWishList.setOnClickListener {
+            progress = progressBar.showProgressBar(this,R.layout.loading,"Please Wait...",R.id.progressText)
+            val jsonObject = JSONObject()
+            jsonObject.put("product_id", id)
+            val request = jsonObject.toString().toRequestBody("application/json".toMediaTypeOrNull())
+            CoroutineScope(Dispatchers.IO).launch {
+                val wishListResponse = try{ RetrofitInstance.retro.addToWishList("Bearer $token",request) }
+                catch(e: SocketTimeoutException){
+                    withContext(Dispatchers.Main){
+                        progress.dismiss()
+                        alerts.showSocketTimeOutAlert()
+                    }
+                    return@launch
+                }catch (e: Exception){
+                    withContext(Dispatchers.Main){
+                        progress.dismiss()
+                        alerts.noInternetAlert()
+                    }
+                    return@launch
+                }
+
+                withContext(Dispatchers.Main){
+                    progress.dismiss()
+                    if(wishListResponse.code() == 200 && wishListResponse.headers().contains(Pair("content-type","application/json"))){
+                        AlertDialog.Builder(this@ProductViewer)
+                            .setTitle("Success")
+                            .setMessage("Product has been added to your wishlist.")
+                            .setPositiveButton("OK", null)
+                            .show()
+                    }else{
+                        alerts.somethingWentWrongAlert()
+                        Log.e("viewer", wishListResponse.errorBody().toString())
+                    }
+                }
+            }
+        }
         addToCart.setOnClickListener {
             if(addToCartValue == "add") {
 
@@ -88,7 +129,7 @@ class ProductViewer : AppCompatActivity() {
                 val addTOCartAlertView =
                     LayoutInflater.from(this).inflate(R.layout.quantity_selector, null)
                 addToCartAlert.setView(addTOCartAlertView)
-                addToCartAlert.show()
+                val alert = addToCartAlert.show()
 
                 val decrease = addTOCartAlertView.findViewById<Button>(R.id.decrease)
                 val increase = addTOCartAlertView.findViewById<Button>(R.id.increase)
@@ -154,6 +195,7 @@ class ProductViewer : AppCompatActivity() {
                                     .show()
                                 addToCartValue = "view"
                                 addToCart.text = "view cart"
+                                alert.dismiss()
                             } else {
                                 AlertDialog.Builder(this@ProductViewer)
                                     .setTitle("Error")
@@ -167,6 +209,7 @@ class ProductViewer : AppCompatActivity() {
             }else{
                 val intent = Intent(this, MyCart::class.java)
                 startActivity(intent)
+                finish()
             }
         }
     }

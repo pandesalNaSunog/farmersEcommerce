@@ -1,14 +1,16 @@
 package com.example.adaptertest2
 
+import java.io.Serializable
+
 data class StoreMasterItem(
-    val Dairy: List<ProductItem>,
-    val Fish: List<ProductItem>,
-    val Fruit: List<ProductItem>,
-    val Meat: List<ProductItem>,
-    val Plant: List<ProductItem>,
-    val Poultry: List<ProductItem>,
-    val Seeds: List<ProductItem>,
-    val Vegetable: List<ProductItem>,
+    val Dairy: List<StoreMasterProductItem>,
+    val Fish: List<StoreMasterProductItem>,
+    val Fruit: List<StoreMasterProductItem>,
+    val Meat: List<StoreMasterProductItem>,
+    val Plant: List<StoreMasterProductItem>,
+    val Poultry: List<StoreMasterProductItem>,
+    val Seeds: List<StoreMasterProductItem>,
+    val Vegetable: List<StoreMasterProductItem>,
     val address: String,
     val approved_as_store_owner_at: String,
     val coordinates: String,

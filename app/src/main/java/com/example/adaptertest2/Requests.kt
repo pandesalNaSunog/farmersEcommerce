@@ -48,4 +48,16 @@ interface Requests {
 
     @POST("/api/clear-cart")
     suspend fun clearCart(@Header("Authorization") token: String): Response<ResponseBody>
+
+    @POST("/api/add-to-wishlist")
+    suspend fun addToWishList(@Header("Authorization") token: String, @Body request: RequestBody): Response<ResponseBody>
+
+    @GET("/api/get-wishlist")
+    suspend fun getWishList(@Header("Authorization") token: String)
+
+    @POST("/api/update-profile")
+    suspend fun updateProfile(@Header("Authorization") token: String, @Body request: RequestBody): Response<ResponseBody>
+
+    @GET("/api/my-profile")
+    suspend fun getMyProfile(@Header("Authorization") token: String): Profile
 }

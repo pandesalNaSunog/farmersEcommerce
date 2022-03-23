@@ -2,7 +2,7 @@ package com.example.adaptertest2
 
 import java.io.Serializable
 
-data class ProductItem(
+data class StoreMasterProductItem(
     val category: String,
     val created_at: String,
     val description: String,
@@ -12,6 +12,6 @@ data class ProductItem(
     val price: String,
     val quantity: String,
     val store_id: Int,
-    val store_owner: StoreOwner,
+    val store_owner: StoreOwnerXXX,
     val updated_at: String
 ): Serializable

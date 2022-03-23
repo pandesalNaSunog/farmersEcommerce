@@ -6,7 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import kotlinx.coroutines.CoroutineScope
@@ -18,7 +20,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
 import java.net.SocketTimeoutException
 
-class CartAdapter(private val list: MutableList<CartItem>): RecyclerView.Adapter<CartAdapter.Holder>() {
+class CartAdapter(private val list: MutableList<CartItem>, private val clearCart: Button, private val cartIsEmpty: LinearLayout): RecyclerView.Adapter<CartAdapter.Holder>() {
     class Holder(itemView: View): RecyclerView.ViewHolder(itemView)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
@@ -77,6 +79,13 @@ class CartAdapter(private val list: MutableList<CartItem>): RecyclerView.Adapter
                                 .setPositiveButton("OK", null)
                                 .show()
                             removeItem(position)
+                            if(list.size == 0){
+                                clearCart.isVisible = false
+                                cartIsEmpty.isVisible = true
+                            }else{
+                                clearCart.isVisible = true
+                                cartIsEmpty.isVisible = false
+                            }
                         }else{
                             AlertDialog.Builder(context)
                                 .setTitle("error")
@@ -97,15 +106,20 @@ class CartAdapter(private val list: MutableList<CartItem>): RecyclerView.Adapter
     fun addItem(cart: CartItem){
         list.add(cart)
         notifyItemInserted(list.size - 1)
+        clearCart.isVisible = true
+        cartIsEmpty.isVisible = false
     }
 
     fun removeItem(position: Int){
         list.removeAt(position)
         notifyDataSetChanged()
+        clearCart.isVisible = list.size != 0
     }
 
     fun deleteAll(){
         list.clear()
         notifyDataSetChanged()
+        clearCart.isVisible = false
+        cartIsEmpty.isVisible = true
     }
 }

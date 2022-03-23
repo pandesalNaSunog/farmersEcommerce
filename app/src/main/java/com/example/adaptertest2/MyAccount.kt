@@ -1,12 +1,35 @@
 package com.example.adaptertest2
 
+import android.app.Activity.RESULT_OK
+import android.app.AlertDialog
+import android.content.Intent
+import android.graphics.Bitmap
 import android.os.Bundle
+import android.provider.MediaStore
+import android.util.Base64
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
 import android.widget.TextView
+import androidx.cardview.widget.CardView
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import de.hdodenhof.circleimageview.CircleImageView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody.Companion.toRequestBody
+import org.json.JSONObject
+import java.io.ByteArrayOutputStream
+import java.net.SocketTimeoutException
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -22,6 +45,8 @@ class MyAccount : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+    private lateinit var image: String
+    private lateinit var imageText: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,21 +64,209 @@ class MyAccount : Fragment() {
         return inflater.inflate(R.layout.fragment_my_account, container, false)
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if(requestCode == 1 && data != null){
+            val uri = data.data
+
+            try {
+                val bitmap = MediaStore.Images.Media.getBitmap(activity?.contentResolver, uri)
+                val stream = ByteArrayOutputStream()
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 50, stream)
+                val bytes: ByteArray = stream.toByteArray()
+
+                image = Base64.encodeToString(bytes, Base64.DEFAULT)
+                imageText.text = uri?.path
+            }catch(e: Exception){
+                e.printStackTrace()
+            }
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         val db = UserDatabase(requireContext())
+        val token = db.getToken()
+        var user = db.getAll()
 
-        val user = db.getAll()
-
+        val editProfile = view.findViewById<Button>(R.id.editProfile)
         val name = view.findViewById<TextView>(R.id.name)
         val email = view.findViewById<TextView>(R.id.email)
-        val addressRecycler = view.findViewById<RecyclerView>(R.id.addressRecycler)
-        val addressAdapter = AddressAdapter(mutableListOf())
-        addressRecycler.adapter = addressAdapter
+        val address = view.findViewById<TextView>(R.id.address)
+        val profileImage = view.findViewById<CircleImageView>(R.id.profileImage)
 
-        name.text = user?.name
-        email.text = user?.email
+        var progress = ProgressBar()
+        var progressBar = progress.showProgressBar(requireContext(),R.layout.loading,"Loading...", R.id.progressText)
+        val alerts = RequestAlerts(requireContext())
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val profile = try{ RetrofitInstance.retro.getMyProfile("Bearer $token") }
+            catch(e: SocketTimeoutException){
+                withContext(Dispatchers.Main){
+                    progressBar.dismiss()
+                    alerts.showSocketTimeOutAlert()
+                }
+                return@launch
+            }catch(e: Exception){
+                withContext(Dispatchers.Main){
+                    progressBar.dismiss()
+                    alerts.noInternetAlert()
+                }
+                return@launch
+            }
+
+            withContext(Dispatchers.Main){
+                progressBar.dismiss()
+                progressBar.dismiss()
+                name.text = profile.name
+                email.text = profile.email
+                address.text = profile.address
+                Glide.with(requireContext()).load("https://yourzaj.xyz/${profile.image}").into(profileImage)
+            }
+        }
+
+
+
+        editProfile.setOnClickListener {
+            val bottomSheet = BottomSheetDialog(requireContext())
+            val bottomSheetView = LayoutInflater.from(requireContext()).inflate(R.layout.update_profile, null)
+            bottomSheet.setContentView(bottomSheetView)
+            bottomSheet.show()
+            val storeNameCard = bottomSheetView.findViewById<CardView>(R.id.storeNameCard)
+            val storeName = bottomSheetView.findViewById<EditText>(R.id.storeName)
+            val updateEmail = bottomSheetView.findViewById<EditText>(R.id.updateEmail)
+            val password = bottomSheetView.findViewById<EditText>(R.id.password)
+            val confirmPassword = bottomSheetView.findViewById<EditText>(R.id.confirmPassword)
+            val coopId = bottomSheetView.findViewById<EditText>(R.id.coopId)
+            val contact = bottomSheetView.findViewById<EditText>(R.id.contact)
+            val update = bottomSheetView.findViewById<Button>(R.id.update)
+            val updateName = bottomSheetView.findViewById<EditText>(R.id.updateName)
+            val farmersCooperative = bottomSheetView.findViewById<TextView>(R.id.coop)
+            val coopSelector = bottomSheetView.findViewById<Button>(R.id.coopSelector)
+            val address = bottomSheetView.findViewById<EditText>(R.id.address)
+            val addressCard = bottomSheetView.findViewById<CardView>(R.id.addressCard)
+            val coopCard = bottomSheetView.findViewById<CardView>(R.id.coopCard)
+            val chooseImage = bottomSheetView.findViewById<Button>(R.id.chooseImage)
+            val coopIdCard = bottomSheetView.findViewById<CardView>(R.id.coopIdCard)
+            imageText = bottomSheetView.findViewById(R.id.imageText)
+
+            coopSelector.setOnClickListener {
+                val coopBottomSheet = BottomSheetDialog(requireContext())
+                val coopBottomSheetView = LayoutInflater.from(requireContext()).inflate(R.layout.cooperative_bottom_sheet, null)
+                coopBottomSheet.setContentView(coopBottomSheetView)
+                coopBottomSheet.show()
+
+
+            }
+
+            chooseImage.setOnClickListener {
+                val intent = Intent(Intent.ACTION_PICK)
+                intent.type = "image/*"
+                startActivityForResult(intent,1,null)
+            }
+            var coopName = ""
+
+            if(user!!.type != "seller"){
+                storeNameCard.isVisible = false
+                coopIdCard.isVisible = false
+                coopCard.isVisible = false
+                addressCard.isVisible = false
+            }else{
+                storeNameCard.isVisible = true
+                coopIdCard.isVisible = true
+                coopCard.isVisible = true
+                addressCard.isVisible = true
+            }
+
+            if(storeName.text.isEmpty()){
+                storeName.setText(user!!.store_name)
+            }
+
+            if(address.text.isEmpty()){
+                address.setText(user!!.address)
+            }
+
+            if(updateEmail.text.isEmpty()){
+                updateEmail.setText(user!!.email)
+            }
+            if(coopId.text.isEmpty()){
+                coopId.setText(user!!.farmers_cooperative_id?.split("|")?.get(0))
+            }
+
+            if(contact.text.isEmpty()){
+                contact.setText(user!!.phone)
+            }
+
+            if(updateName.text.isEmpty()){
+                updateName.setText(user!!.name)
+            }
+            if(farmersCooperative.text.isEmpty()){
+                farmersCooperative.text = user!!.farmers_cooperative_id?.split("|")?.get(1)
+            }
+
+            update.setOnClickListener {
+                if(password.text.isEmpty()){
+                    password.error = "Please fill out this field"
+                }else if(password.text.toString() != confirmPassword.text.toString()){
+                    password.error = "Password mismatch"
+                }else if(imageText.text.isEmpty()){
+                    imageText.error = "Please choose an image"
+                }else{
+                    val jsonObject = JSONObject()
+                    jsonObject.put("name", updateName.text.toString())
+                    jsonObject.put("address", address.text.toString())
+                    jsonObject.put("password", password.text.toString())
+                    jsonObject.put("farmers_cooperative_id", "${coopId.text}|${farmersCooperative.text}")
+                    jsonObject.put("phone", contact.text.toString())
+                    jsonObject.put("store_name", storeName.text.toString())
+                    jsonObject.put("coordinates", user!!.coordinates)
+                    jsonObject.put("image", image)
+
+                    val request = jsonObject.toString().toRequestBody("application/json".toMediaTypeOrNull())
+
+                    progress = ProgressBar()
+                    progressBar = progress.showProgressBar(requireContext(),R.layout.loading,"Updating Profile...", R.id.progressText)
+
+                    CoroutineScope(Dispatchers.IO).launch {
+                        val updateProfileResponse = try{ RetrofitInstance.retro.updateProfile("Bearer $token",request) }
+                        catch(e: SocketTimeoutException){
+                            withContext(Dispatchers.Main){
+                                progressBar.dismiss()
+                                alerts.showSocketTimeOutAlert()
+                            }
+                            return@launch
+                        }catch(e: Exception){
+                            withContext(Dispatchers.Main){
+                                progressBar.dismiss()
+                                alerts.noInternetAlert()
+                            }
+                            return@launch
+                        }
+
+                        withContext(Dispatchers.Main){
+                            progressBar.dismiss()
+
+                            if(updateProfileResponse.code() == 200 && updateProfileResponse.headers().contains(Pair("content-type","application/json"))){
+                                val userData = User(address.text.toString(),user!!.coordinates,null,user!!.email,null,"${coopId.text}|${farmersCooperative.text}"
+                                ,user!!.id,updateName.text.toString(),contact.text.toString(),null,storeName.text.toString(),null,null)
+                                db.updateProfile(userData)
+                                user = db.getAll()
+                                name.text = user!!.name
+                                email.text = user!!.email
+                                AlertDialog.Builder(requireContext())
+                                    .setTitle("Success")
+                                    .setMessage("Your profile has been updated.")
+                                    .setPositiveButton("OK", null)
+                                    .show()
+
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     companion object {

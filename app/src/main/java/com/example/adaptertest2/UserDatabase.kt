@@ -24,6 +24,7 @@ class UserDatabase(context: Context): SQLiteOpenHelper(context, databaseName, nu
         private const val coordinates = "coordinates"
         private const val onlineId = "onlineId"
         private const val type = "type"
+        private const val image = "image"
         private const val token = "token"
     }
 
@@ -36,6 +37,23 @@ class UserDatabase(context: Context): SQLiteOpenHelper(context, databaseName, nu
         val query = "DROP TABLE IF EXISTS $tableName"
         db?.execSQL(query)
         onCreate(db)
+    }
+
+    fun updateProfile(user: User){
+        val db = this.writableDatabase
+        val content = ContentValues()
+
+        content.put(name, user.name)
+        content.put(storeName, user.store_name)
+        content.put(email, user.email)
+        content.put(phone, user.phone)
+        content.put(address, user.address)
+        content.put(farmerId, user.farmers_cooperative_id)
+        content.put(coordinates, user.coordinates)
+        content.put(onlineId, user.id)
+
+        db.update(tableName,content, null, null)
+        db.close()
     }
 
     fun addItem(user: User, stoken: String){

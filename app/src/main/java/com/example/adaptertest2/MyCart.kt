@@ -1,8 +1,10 @@
 package com.example.adaptertest2
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
+import android.widget.LinearLayout
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,11 +22,14 @@ class MyCart : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_my_cart)
 
+
+        val shopNow = findViewById<Button>(R.id.shopNow)
+        val cartIsEmpty = findViewById<LinearLayout>(R.id.cartIsEmpty)
         val cleartCart = findViewById<Button>(R.id.clearCart)
         val db = UserDatabase(this)
         val token = db.getToken()
         val cartRecycler = findViewById<RecyclerView>(R.id.cartRecycler)
-        val cartAdapter = CartAdapter(mutableListOf())
+        val cartAdapter = CartAdapter(mutableListOf(),cleartCart, cartIsEmpty)
         cartRecycler.adapter = cartAdapter
         cartRecycler.layoutManager = LinearLayoutManager(this)
 
@@ -53,7 +58,14 @@ class MyCart : AppCompatActivity() {
                     cartAdapter.addItem(cart[i])
                 }
                 cleartCart.isVisible = cart.size != 0
+                cartIsEmpty.isVisible = cart.size == 0
             }
+        }
+
+        shopNow.setOnClickListener {
+            val intent = Intent(this,Navigation::class.java)
+            startActivity(intent)
+            finishAffinity()
         }
 
         cleartCart.setOnClickListener {

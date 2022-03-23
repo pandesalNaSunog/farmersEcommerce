@@ -1,12 +1,19 @@
 package com.example.adaptertest2
 
+import android.app.Activity
+import android.content.Intent
+import android.os.Bundle
+import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat.createDeviceProtectedStorageContext
+import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import java.io.Serializable
 
 class StoreMasterAdapter(private val list: MutableList<StoreMasterItem>): RecyclerView.Adapter<StoreMasterAdapter.Holder>() {
     class Holder(itemView: View): RecyclerView.ViewHolder(itemView)
@@ -41,8 +48,48 @@ class StoreMasterAdapter(private val list: MutableList<StoreMasterItem>): Recycl
                 val poultry = categoryBottomSheetView.findViewById<CardView>(R.id.poultry)
                 val seeds = categoryBottomSheetView.findViewById<CardView>(R.id.seeds)
                 val plant = categoryBottomSheetView.findViewById<CardView>(R.id.plant)
+                val intent = Intent(context,ProductsPerCategory::class.java)
+                val bundle = Bundle()
 
                 vegetable.setOnClickListener {
+                    bundle.putSerializable("productList", current.Vegetable as Serializable)
+                    intent.putExtras(bundle)
+                    startActivity(context,intent,null)
+                }
+                fruit.setOnClickListener {
+                    bundle.putSerializable("productList", current.Fruit as Serializable)
+                    intent.putExtras(bundle)
+                    startActivity(context,intent,null)
+                }
+                meat.setOnClickListener {
+                    bundle.putSerializable("productList", current.Meat as Serializable)
+                    intent.putExtras(bundle)
+                    startActivity(context,intent,null)
+                }
+                fish.setOnClickListener {
+                    bundle.putSerializable("productList", current.Fish as Serializable)
+                    intent.putExtras(bundle)
+                    startActivity(context,intent,null)
+                }
+                dairy.setOnClickListener {
+                    bundle.putSerializable("productList", current.Dairy as Serializable)
+                    intent.putExtras(bundle)
+                    startActivity(context,intent,null)
+                }
+                poultry.setOnClickListener {
+                    bundle.putSerializable("productList", current.Poultry as Serializable)
+                    intent.putExtras(bundle)
+                    startActivity(context,intent,null)
+                }
+                seeds.setOnClickListener {
+                    bundle.putSerializable("productList", current.Seeds as Serializable)
+                    intent.putExtras(bundle)
+                    startActivity(context,intent,null)
+                }
+                plant.setOnClickListener {
+                    bundle.putSerializable("productList", current.Plant as Serializable)
+                    intent.putExtras(bundle)
+                    startActivity(context,intent,null)
                 }
             }
         }
