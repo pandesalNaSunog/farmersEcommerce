@@ -1,11 +1,14 @@
 package com.example.adaptertest2
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.CoroutineScope
@@ -29,6 +32,7 @@ class OrdersAdapter(private val list: MutableList<OrdersItem>): RecyclerView.Ada
         val current = list[position]
         val separator = ItemBreakDownSeparator()
         holder.itemView.apply {
+            val statusBackground = findViewById<ConstraintLayout>(R.id.orderStatusBackground)
             val db = UserDatabase(context)
             val token = db.getToken()
             val mark = findViewById<Button>(R.id.markAsReceived)
@@ -58,6 +62,16 @@ class OrdersAdapter(private val list: MutableList<OrdersItem>): RecyclerView.Ada
             vatRate.text = "PHP ${current.vatRate}"
             total.text = "PHP ${current.total}"
             status.text = current.status
+
+            mark.isVisible = current.status != "Completed"
+
+            if(current.status == "Packaging"){
+                statusBackground.setBackgroundColor(resources.getColor(R.color.packaging))
+            }else if(current.status == "Deliver"){
+                statusBackground.setBackgroundColor(resources.getColor(R.color.teal_200))
+            }else{
+                statusBackground.setBackgroundColor(resources.getColor(R.color.green))
+            }
 
             mark.setOnClickListener{
                 AlertDialog.Builder(context)
@@ -91,7 +105,9 @@ class OrdersAdapter(private val list: MutableList<OrdersItem>): RecyclerView.Ada
                             withContext(Dispatchers.Main){
                                 progress.dismiss()
                                 if(markAsCompleteResponse.code() == 200 && markAsCompleteResponse.headers().contains(Pair("content-type","application/json"))){
-                                    mark.isEnabled = false
+                                    mark.isVisible = false
+                                    status.text = "Completed"
+                                    statusBackground.setBackgroundColor(resources.getColor(R.color.green))
                                 }else{
                                     AlertDialog.Builder(context)
                                         .setTitle("Error")

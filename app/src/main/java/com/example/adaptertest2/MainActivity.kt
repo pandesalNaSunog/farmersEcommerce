@@ -125,11 +125,17 @@ class MainActivity : AppCompatActivity() {
                             }catch(e: Exception){
                                 ""
                             }
+
+                            val approvedAsSellerAt = try{
+                                user.getString("approved_as_store_owner_at")
+                            }catch(e: Exception){
+                                ""
+                            }
+                            Log.e("MainActivity", approvedAsSellerAt)
                             val id: Int = user.getInt("id")
 
-                            val userData = User(address,coordinates,null,emailData,null,farmerId,id,name,phoneData,null,storeName,type,null)
+                            val userData = UserXX(address,approvedAsSellerAt,coordinates,null,emailData,null,farmerId, id,null, name,phoneData,null,storeName,type,null)
                             db.addItem(userData, token)
-
                             val intent = Intent(this@MainActivity, Navigation::class.java)
                             startActivity(intent)
                             finishAffinity()

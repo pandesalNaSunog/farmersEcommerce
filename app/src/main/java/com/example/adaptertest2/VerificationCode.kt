@@ -134,6 +134,7 @@ class VerificationCode : AppCompatActivity() {
                         }
 
                         withContext(Dispatchers.Main){
+                            progress.dismiss()
                             if(requestVerif.code() == 200 && requestVerif.headers().contains(Pair("content-type","application/json"))){
                                 countDown.cancel()
                                 countDown.start()

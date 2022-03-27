@@ -40,7 +40,7 @@ class CartAdapter(private val list: MutableList<CartItem>, private val clearCart
             Glide.with(context).load("https://yourzaj.xyz/${current.product.image}").into(image)
             price.text = "PHP ${current.product.price}"
             name.text = current.product.name
-            quantityText.text = current.quantity.toString()
+            quantityText.text = "Qty: ${current.quantity}"
 
             remove.setOnClickListener{
                 val progress = ProgressBar()

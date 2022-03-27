@@ -20,6 +20,8 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.gson.GsonBuilder
+import com.google.gson.JsonParser
 import de.hdodenhof.circleimageview.CircleImageView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -28,6 +30,7 @@ import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
+import org.json.JSONTokener
 import java.io.ByteArrayOutputStream
 import java.net.SocketTimeoutException
 
@@ -123,7 +126,7 @@ class MyAccount : Fragment() {
                 name.text = profile.name
                 email.text = profile.email
                 address.text = profile.address
-                Glide.with(requireContext()).load("https://yourzaj.xyz/${profile.image}").into(profileImage)
+                Glide.with(requireContext()).load("https://yourzaj.xyz/${profile.image}").error(R.drawable.ic_baseline_account_circle_24).into(profileImage)
             }
         }
 
@@ -253,8 +256,17 @@ class MyAccount : Fragment() {
                             progressBar.dismiss()
 
                             if(updateProfileResponse.code() == 200 && updateProfileResponse.headers().contains(Pair("content-type","application/json"))){
-                                val userData = User(address.text.toString(),user!!.coordinates,null,user!!.email,null,"${coopId.text}|${farmersCooperative.text}"
-                                ,user!!.id,updateName.text.toString(),contact.text.toString(),null,storeName.text.toString(),null,null)
+
+                                val gson = GsonBuilder().setPrettyPrinting().create()
+                                val json = gson.toJson(JsonParser.parseString(updateProfileResponse.body()?.string()))
+
+                                val profileResponseObject = JSONTokener(json).nextValue() as JSONObject
+
+                                val image = profileResponseObject.getString("image")
+
+                                Log.e("MyAccount", json)
+                                val userData = UserXX(address.text.toString(),user?.approved_as_store_owner_at,user?.coordinates,null,user?.email,null,"${coopId.text}|${farmersCooperative.text}",
+                                user?.id,image,user?.name,user?.phone,null,user?.store_name,user?.type,null)
                                 db.updateProfile(userData)
                                 user = db.getAll()
                                 name.text = user!!.name
@@ -265,6 +277,7 @@ class MyAccount : Fragment() {
                                     .setPositiveButton("OK", null)
                                     .show()
                                 bottomSheet.dismiss()
+                                Glide.with(requireContext()).load("https://yourzaj.xyz/$image").error(R.drawable.ic_baseline_account_circle_24).into(profileImage)
 
                             }else{
                                 alerts.somethingWentWrongAlert()

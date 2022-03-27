@@ -2,7 +2,7 @@ package com.example.adaptertest2
 
 data class Profile(
     val address: String,
-    val approved_as_store_owner_at: String,
+    val approved_as_store_owner_at: String?,
     val coordinates: String,
     val created_at: String,
     val email: String,

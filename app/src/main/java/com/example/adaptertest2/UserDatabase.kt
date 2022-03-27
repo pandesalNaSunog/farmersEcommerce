@@ -26,10 +26,11 @@ class UserDatabase(context: Context): SQLiteOpenHelper(context, databaseName, nu
         private const val type = "type"
         private const val image = "image"
         private const val token = "token"
+        private const val approvedAsSeller = "approved"
     }
 
     override fun onCreate(db: SQLiteDatabase?) {
-        val query = "CREATE TABLE $tableName($id INTEGER PRIMARY KEY, $name TEXT, $storeName TEXT, $email TEXT, $phone TEXT, $address TEXT, $farmerId TEXT, $coordinates TEXT, $onlineId INTEGER, $type TEXT, $token TEXT)"
+        val query = "CREATE TABLE $tableName($id INTEGER PRIMARY KEY, $name TEXT, $storeName TEXT, $email TEXT, $phone TEXT, $address TEXT, $farmerId TEXT, $coordinates TEXT, $onlineId INTEGER, $type TEXT, $token TEXT, $approvedAsSeller TEXT)"
         db?.execSQL(query)
     }
 
@@ -39,7 +40,7 @@ class UserDatabase(context: Context): SQLiteOpenHelper(context, databaseName, nu
         onCreate(db)
     }
 
-    fun updateProfile(user: User){
+    fun updateProfile(user: UserXX){
         val db = this.writableDatabase
         val content = ContentValues()
 
@@ -51,12 +52,13 @@ class UserDatabase(context: Context): SQLiteOpenHelper(context, databaseName, nu
         content.put(farmerId, user.farmers_cooperative_id)
         content.put(coordinates, user.coordinates)
         content.put(onlineId, user.id)
+        content.put(approvedAsSeller, user.approved_as_store_owner_at)
 
         db.update(tableName,content, null, null)
         db.close()
     }
 
-    fun addItem(user: User, stoken: String){
+    fun addItem(user: UserXX, stoken: String){
         val db = this.writableDatabase
         val content = ContentValues()
 
@@ -70,18 +72,19 @@ class UserDatabase(context: Context): SQLiteOpenHelper(context, databaseName, nu
         content.put(onlineId, user.id)
         content.put(type, user.type)
         content.put(token, stoken)
+        content.put(approvedAsSeller, user.approved_as_store_owner_at)
 
         db.insert(tableName, null,content)
         db.close()
     }
 
     @SuppressLint("Range")
-    fun getAll(): User?{
+    fun getAll(): UserXX?{
         val db = this.readableDatabase
         val query = "SELECT * FROM $tableName"
 
         val cursor: Cursor
-        var user: User? = null
+        var user: UserXX? = null
         try{
             cursor = db.rawQuery(query,null)
         }catch(e: SQLiteException){
@@ -90,6 +93,7 @@ class UserDatabase(context: Context): SQLiteOpenHelper(context, databaseName, nu
         }
 
         if(cursor.moveToFirst()){
+            val sApprovedAsSeller = cursor.getString(cursor.getColumnIndex(approvedAsSeller))
             val stype = cursor.getString(cursor.getColumnIndex(type))
             val sname: String? = cursor.getString(cursor.getColumnIndex(name))
             val semail: String? = cursor.getString(cursor.getColumnIndex(email))
@@ -100,7 +104,7 @@ class UserDatabase(context: Context): SQLiteOpenHelper(context, databaseName, nu
             val scoordinates: String? = cursor.getString(cursor.getColumnIndex(coordinates))
             val sonlineId: Int? = cursor.getInt(cursor.getColumnIndex(onlineId))
 
-            user = User(saddress,scoordinates,null, semail,null,sfarmerId,sonlineId,sname,sphone,null,sstoreName,stype,null)
+            user = UserXX(saddress,sApprovedAsSeller,scoordinates,null,semail,null,sfarmerId,sonlineId,null,sname,sphone,null,sstoreName,stype,null)
         }
         return user
     }

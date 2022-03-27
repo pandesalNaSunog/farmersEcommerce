@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.cardview.widget.CardView
 import androidx.core.view.isVisible
+import com.bumptech.glide.Glide
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -50,6 +51,8 @@ class More : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val showStoreLocations = view.findViewById<CardView>(R.id.storeLocations)
+
         val wishList = view.findViewById<CardView>(R.id.wishList)
         val myCart = view.findViewById<CardView>(R.id.myCart)
         val logout = view.findViewById<CardView>(R.id.logout)
@@ -70,13 +73,49 @@ class More : Fragment() {
             startActivity(inent)
         }
 
+        showStoreLocations.setOnClickListener {
+            val intent = Intent(requireContext(), StoreLocations::class.java)
+            startActivity(intent)
+        }
+
         myStore.setOnClickListener {
-            try{
-                val intent = Intent(activity, SellerNavigation::class.java)
-                startActivity(intent)
-            }catch(e: Exception){
-                Log.e("MOre", e.toString())
+            Log.e("more",user?.approved_as_store_owner_at.toString())
+
+            var progress = ProgressBar()
+            var progressBar = progress.showProgressBar(requireContext(),R.layout.loading,"Loading...", R.id.progressText)
+            val alerts = RequestAlerts(requireContext())
+
+            CoroutineScope(Dispatchers.IO).launch {
+                val profile = try{ RetrofitInstance.retro.getMyProfile("Bearer $token") }
+                catch(e: SocketTimeoutException){
+                    withContext(Dispatchers.Main){
+                        progressBar.dismiss()
+                        alerts.showSocketTimeOutAlert()
+                    }
+                    return@launch
+                }catch(e: Exception){
+                    withContext(Dispatchers.Main){
+                        progressBar.dismiss()
+                        alerts.noInternetAlert()
+                    }
+                    return@launch
+                }
+
+                withContext(Dispatchers.Main){
+                    progressBar.dismiss()
+                    if(profile.approved_as_store_owner_at != null) {
+                        val intent = Intent(activity, SellerNavigation::class.java)
+                        startActivity(intent)
+                    }else{
+                        AlertDialog.Builder(requireContext())
+                            .setTitle("Pending Approval")
+                            .setMessage("Your store is currently pending for approval. Please wait for the administrator to approve your store registration.")
+                            .setPositiveButton("OK", null)
+                            .show()
+                    }
+                }
             }
+
 
         }
 

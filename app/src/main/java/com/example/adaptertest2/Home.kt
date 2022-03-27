@@ -6,6 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.LinearLayout
+import androidx.core.view.isVisible
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -49,6 +51,8 @@ class Home : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val noProducts = view.findViewById<LinearLayout>(R.id.noProducts)
+
         val productRecycler = view.findViewById<RecyclerView>(R.id.productRecycler)
         val productAdapter = ProductAdapter(mutableListOf())
         productRecycler.adapter = productAdapter
@@ -78,6 +82,7 @@ class Home : Fragment() {
                 for(i in products.indices){
                     productAdapter.addItem(products[i])
                 }
+                noProducts.isVisible = products.size == 0
             }
         }
     }
