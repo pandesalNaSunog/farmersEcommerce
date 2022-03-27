@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
+import android.widget.EditText
 import android.widget.LinearLayout
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
@@ -19,6 +20,18 @@ class WishList : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_wish_list)
+
+        val searchText = findViewById<EditText>(R.id.editText)
+        val searchButton = findViewById<Button>(R.id.button)
+
+        searchButton.setOnClickListener {
+            if(searchText.text.isEmpty()){
+                searchText.error = "Please fill out this field"
+            }else{
+                val search = Search(this)
+                search.goToSearchProducts(searchText.text.toString())
+            }
+        }
 
         val shopNow = findViewById<Button>(R.id.shopNow)
         val clearWish = findViewById<Button>(R.id.clearWish)

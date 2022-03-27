@@ -30,6 +30,19 @@ class MyCart : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_my_cart)
 
+
+        val searchText = findViewById<EditText>(R.id.editText)
+        val searchButton = findViewById<Button>(R.id.button)
+
+        searchButton.setOnClickListener {
+            if(searchText.text.isEmpty()){
+                searchText.error = "Please fill out this field"
+            }else{
+                val search = Search(this)
+                search.goToSearchProducts(searchText.text.toString())
+            }
+        }
+
         val checkout = findViewById<Button>(R.id.checkout)
         val shopNow = findViewById<Button>(R.id.shopNow)
         val cartIsEmpty = findViewById<LinearLayout>(R.id.cartIsEmpty)

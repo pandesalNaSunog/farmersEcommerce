@@ -13,27 +13,31 @@
         <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/drawable/store_item.xml" value="0.295" />
         <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/activity_consumer_registration_form.xml" value="0.25" />
         <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/activity_main.xml" value="0.25" />
-        <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/activity_my_cart.xml" value="0.23958333333333334" />
+        <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/activity_my_cart.xml" value="0.3770028275212064" />
         <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/activity_navigation.xml" value="0.25" />
         <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/activity_product_viewer.xml" value="0.22" />
         <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/activity_products_per_category.xml" value="0.23958333333333334" />
+        <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/activity_searched_products.xml" value="0.35104166666666664" />
         <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/activity_select_user_type.xml" value="0.22" />
         <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/activity_seller_navigation.xml" value="0.21927083333333333" />
         <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/activity_seller_registration_form.xml" value="0.5218135158254918" />
         <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/activity_store_location.xml" value="0.5" />
         <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/activity_verification_code.xml" value="0.25" />
-        <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/activity_wish_list.xml" value="0.29739583333333336" />
+        <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/activity_wish_list.xml" value="0.37105751391465674" />
         <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/add_product_form.xml" value="0.33" />
         <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/address_item.xml" value="0.5" />
         <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/cart_item.xml" value="0.5" />
         <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/category_bottomsheet.xml" value="0.2515625" />
         <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/checkout.xml" value="0.36666666666666664" />
         <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/cooperative_bottom_sheet.xml" value="0.3177083333333333" />
+        <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/feedback_item.xml" value="0.30520833333333336" />
+        <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/feedbak_container.xml" value="0.36666666666666664" />
         <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/fragment_home.xml" value="0.2140625" />
         <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/fragment_more.xml" value="0.33" />
         <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/fragment_my_account.xml" value="0.2140625" />
         <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/fragment_my_orders.xml" value="0.21927083333333333" />
         <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/fragment_products.xml" value="0.3151041666666667" />
+        <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/fragment_sales.xml" value="0.21354166666666666" />
         <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/fragment_second.xml" value="0.2140625" />
         <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/fragment_second2.xml" value="0.2140625" />
         <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/fragment_seller_products.xml" value="0.21927083333333333" />
@@ -44,6 +48,7 @@
         <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/product_bottom_sheet.xml" value="0.18802083333333333" />
         <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/product_card.xml" value="0.67" />
         <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/quantity_selector.xml" value="0.5" />
+        <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/sales_item.xml" value="0.36666666666666664" />
         <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/seller_product_card.xml" value="0.3177083333333333" />
         <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/store_item.xml" value="0.3151041666666667" />
         <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/submit_location_coordinates.xml" value="0.33" />

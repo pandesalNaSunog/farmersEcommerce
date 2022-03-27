@@ -3,10 +3,7 @@ package com.example.adaptertest2
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Response
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.Header
-import retrofit2.http.POST
+import retrofit2.http.*
 
 interface Requests {
 
@@ -72,4 +69,19 @@ interface Requests {
 
     @POST("/api/checkout")
     suspend fun checkOut(@Header("Authorization") token: String, @Body request: RequestBody): Response<ResponseBody>
+
+    @POST("/api/write-feedback")
+    suspend fun writeFeedBack(@Header("Authorization") token: String, @Body request: RequestBody): Response<ResponseBody>
+
+    @GET("/api/feedback-products")
+    suspend fun getFeedBack(@Query("product_id") id: Int): FeedBackDetails
+
+    @POST("/api/mark-order-as-completed")
+    suspend fun markOrderAsCompleted(@Header("Authorization") token: String, @Body request: RequestBody): Response<ResponseBody>
+
+    @GET("/api/sales")
+    suspend fun getSales(@Header("Authorization") token: String): SalesDetails
+
+    @GET("/api/search-products")
+    suspend fun searchProducts(@Query("keyword") keyword: String): Product
 }

@@ -14,15 +14,15 @@ class ItemBreakDownSeparator {
     }
 
     fun getQuantity(itemBreakDown: String): String{
-        return itemBreakDown.split("****")[1]
+        return itemBreakDown.split("***")[3]
     }
 
     fun getPrice(itemBreakDown: String): Double{
-        val price = itemBreakDown.split("****")[0].split("***")[2]
+        val price = itemBreakDown.split("***")[2]
         return price.toDouble()
     }
 
     fun productName(itemBreakDown: String): String {
-        return itemBreakDown.split("****")[0].split("***")[1]
+        return itemBreakDown.split("***")[1]
     }
 }

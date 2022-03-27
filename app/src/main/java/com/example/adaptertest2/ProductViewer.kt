@@ -5,13 +5,13 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
+import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -27,6 +27,23 @@ class ProductViewer : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_product_viewer)
 
+
+
+
+        val feedbacks = findViewById<Button>(R.id.feedbacks)
+
+        val searchText = findViewById<EditText>(R.id.editText)
+        val searchButton = findViewById<Button>(R.id.button)
+
+        searchButton.setOnClickListener {
+            if(searchText.text.isEmpty()){
+                searchText.error = "Please fill out this field"
+            }else{
+                val search = Search(this)
+                search.goToSearchProducts(searchText.text.toString())
+            }
+        }
+
         val available = findViewById<TextView>(R.id.quantity)
         val imageView = findViewById<ImageView>(R.id.imageView)
         val nameView = findViewById<TextView>(R.id.nameView)
@@ -35,6 +52,7 @@ class ProductViewer : AppCompatActivity() {
         val addToCart = findViewById<Button>(R.id.addToCart)
         val db = UserDatabase(this)
         val token = db.getToken()
+        val user = db.getAll()
         val buttons = findViewById<LinearLayout>(R.id.linearLayout2)
         buttons.isVisible = false
 
@@ -56,9 +74,9 @@ class ProductViewer : AppCompatActivity() {
 
         var addToCartValue = "add"
         var wishListValue = "add"
-        val progressBar = ProgressBar()
+        var progressBar = ProgressBar()
         var progress = progressBar.showProgressBar(this,R.layout.loading,"Loading...",R.id.progressText)
-        val alerts = RequestAlerts(this)
+        var alerts = RequestAlerts(this)
 
         CoroutineScope(Dispatchers.IO).launch {
             val cart = try{ RetrofitInstance.retro.getCartItems("Bearer $token") }
@@ -115,6 +133,143 @@ class ProductViewer : AppCompatActivity() {
                         wishListValue = "view"
                         addToWishList.text = "view wishlist"
                         break
+                    }
+                }
+            }
+        }
+
+        feedbacks.setOnClickListener {
+            val feedbackSheet = BottomSheetDialog(this)
+            val feedbackView = LayoutInflater.from(this).inflate(R.layout.feedbak_container, null)
+            feedbackSheet.setContentView(feedbackView)
+            feedbackSheet.show()
+            val ratingGrid = feedbackView.findViewById<GridLayout>(R.id.ratingGrid)
+            ratingGrid.isVisible = user?.type != "seller"
+            val postComment = feedbackView.findViewById<Button>(R.id.postComment)
+            val writeComment = feedbackView.findViewById<EditText>(R.id.writeComment)
+            val feedbackRecycler = feedbackView.findViewById<RecyclerView>(R.id.feedbackRecycler)
+            val feedbackAdapter = FeedBackAdapter(mutableListOf())
+
+
+            val one = feedbackView.findViewById<ImageView>(R.id.one)
+            val two = feedbackView.findViewById<ImageView>(R.id.two)
+            val three = feedbackView.findViewById<ImageView>(R.id.three)
+            val four = feedbackView.findViewById<ImageView>(R.id.four)
+            val five = feedbackView.findViewById<ImageView>(R.id.five)
+            var ratingValue = 0
+            val buttonList = ArrayList<ImageView>()
+            buttonList.add(one)
+            buttonList.add(two)
+            buttonList.add(three)
+            buttonList.add(four)
+            buttonList.add(five)
+
+            updateRating(buttonList,0)
+
+            one.setOnClickListener{
+                ratingValue = updateRating(buttonList,1)
+            }
+            two.setOnClickListener{
+                ratingValue = updateRating(buttonList,2)
+            }
+            three.setOnClickListener{
+                ratingValue = updateRating(buttonList,3)
+            }
+            four.setOnClickListener{
+                ratingValue = updateRating(buttonList,4)
+            }
+            five.setOnClickListener{
+                ratingValue = updateRating(buttonList,5)
+            }
+
+
+
+
+            feedbackRecycler.adapter = feedbackAdapter
+            feedbackRecycler.layoutManager = LinearLayoutManager(this)
+
+            progressBar = ProgressBar()
+            progress = progressBar.showProgressBar(this,R.layout.loading, "Loading", R.id.progressText)
+            alerts = RequestAlerts(this)
+
+            CoroutineScope(Dispatchers.IO).launch {
+                val feedbackResponse = try{ RetrofitInstance.retro.getFeedBack(id) }
+                catch(e: SocketTimeoutException){
+                    withContext(Dispatchers.Main){
+                        progress.dismiss()
+                        alerts.showSocketTimeOutAlert()
+                    }
+                    return@launch
+                }catch(e: Exception){
+                    withContext(Dispatchers.Main){
+                        progress.dismiss()
+                        alerts.noInternetAlert()
+                        Log.e("sellerproductadapter", e.toString())
+                    }
+                    return@launch
+                }
+
+                withContext(Dispatchers.Main){
+                    progress.dismiss()
+                    for(i in feedbackResponse.feedbacks.indices){
+                        feedbackAdapter.addItem(feedbackResponse.feedbacks[i])
+                    }
+                }
+            }
+
+            postComment.setOnClickListener {
+                if(writeComment.text.isEmpty()){
+                    writeComment.error = "Please write a comment."
+                }else{
+                    val jsonObject = JSONObject()
+                    jsonObject.put("product_id", id)
+                    if(user?.type == "seller") {
+                        jsonObject.put("star", 5)
+                    }else{
+                        jsonObject.put("star", ratingValue)
+                    }
+                    jsonObject.put("message", writeComment.text.toString())
+
+                    val request = jsonObject.toString().toRequestBody("application/json".toMediaTypeOrNull())
+
+                    progressBar = ProgressBar()
+                    progress = progressBar.showProgressBar(this,R.layout.loading, "Posting...", R.id.progressText)
+                    alerts = RequestAlerts(this)
+
+                    CoroutineScope(Dispatchers.IO).launch {
+                        val postCommentResponse = try{ RetrofitInstance.retro.writeFeedBack("Bearer $token",request) }
+                        catch(e: SocketTimeoutException){
+                            withContext(Dispatchers.Main){
+                                progress.dismiss()
+                                alerts.showSocketTimeOutAlert()
+                            }
+                            return@launch
+                        }catch(e: Exception){
+                            withContext(Dispatchers.Main){
+                                progress.dismiss()
+                                alerts.noInternetAlert()
+                            }
+                            return@launch
+                        }
+
+                        withContext(Dispatchers.Main){
+                            progress.dismiss()
+                            if((postCommentResponse.code() == 200 || postCommentResponse.code() == 201) && postCommentResponse.headers().contains(Pair("content-type","application/json"))){
+                                android.app.AlertDialog.Builder(this@ProductViewer)
+                                    .setTitle("Success")
+                                    .setMessage("Your comment has been posted.")
+                                    .setPositiveButton("OK", null)
+                                    .show()
+                                feedbackSheet.dismiss()
+                            }else{
+                                android.app.AlertDialog.Builder(this@ProductViewer)
+                                    .setTitle("Error")
+                                    .setMessage("Something went wrong.")
+                                    .setPositiveButton("OK", null)
+                                    .show()
+                                feedbackSheet.dismiss()
+                            }
+                        }
                     }
                 }
             }
@@ -263,5 +418,18 @@ class ProductViewer : AppCompatActivity() {
                 finish()
             }
         }
+    }
+
+    private fun updateRating(list: ArrayList<ImageView>, value: Int): Int{
+        for(i in list.indices){
+            if(i < value){
+                list[i].setImageResource(R.drawable.ic_baseline_star_24)
+                Log.e("viewer", "$i dark")
+            }else{
+                list[i].setImageResource(R.drawable.ic_baseline_star_border_24)
+                Log.e("viewer", "$i light")
+            }
+        }
+        return value
     }
 }

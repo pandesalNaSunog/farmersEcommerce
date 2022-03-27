@@ -1,11 +1,22 @@
 package com.example.adaptertest2
 
+import android.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import okhttp3.Dispatcher
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody.Companion.toRequestBody
+import org.json.JSONObject
+import java.net.SocketTimeoutException
 
 class OrdersAdapter(private val list: MutableList<OrdersItem>): RecyclerView.Adapter<OrdersAdapter.Holder>() {
     class Holder(itemView: View): RecyclerView.ViewHolder(itemView)
@@ -18,6 +29,9 @@ class OrdersAdapter(private val list: MutableList<OrdersItem>): RecyclerView.Ada
         val current = list[position]
         val separator = ItemBreakDownSeparator()
         holder.itemView.apply {
+            val db = UserDatabase(context)
+            val token = db.getToken()
+            val mark = findViewById<Button>(R.id.markAsReceived)
             val address = findViewById<TextView>(R.id.address)
             val remarks = findViewById<TextView>(R.id.remarks)
             val subtotal = findViewById<TextView>(R.id.subtotal)
@@ -44,6 +58,53 @@ class OrdersAdapter(private val list: MutableList<OrdersItem>): RecyclerView.Ada
             vatRate.text = "PHP ${current.vatRate}"
             total.text = "PHP ${current.total}"
             status.text = current.status
+
+            mark.setOnClickListener{
+                AlertDialog.Builder(context)
+                    .setTitle("Mark as Received")
+                    .setMessage("Mark this item as received?")
+                    .setPositiveButton("YES"){_,_->
+                        val progressBar = ProgressBar()
+                        val progress = progressBar.showProgressBar(context, R.layout.loading, "Marking...", R.id.progressText)
+                        val alerts = RequestAlerts(context)
+
+                        val jsonObject = JSONObject()
+                        jsonObject.put("order_id", current.id)
+
+                        val request = jsonObject.toString().toRequestBody("application/json".toMediaTypeOrNull())
+                        CoroutineScope(Dispatchers.IO).launch {
+                            val markAsCompleteResponse = try{ RetrofitInstance.retro.markOrderAsCompleted("Bearer $token",request) }
+                            catch(e: SocketTimeoutException){
+                                withContext(Dispatchers.Main){
+                                    progress.dismiss()
+                                    alerts.showSocketTimeOutAlert()
+                                }
+                                return@launch
+                            }catch(e: Exception){
+                                withContext(Dispatchers.Main){
+                                    progress.dismiss()
+                                    alerts.noInternetAlert()
+                                }
+                                return@launch
+                            }
+
+                            withContext(Dispatchers.Main){
+                                progress.dismiss()
+                                if(markAsCompleteResponse.code() == 200 && markAsCompleteResponse.headers().contains(Pair("content-type","application/json"))){
+                                    mark.isEnabled = false
+                                }else{
+                                    AlertDialog.Builder(context)
+                                        .setTitle("Error")
+                                        .setMessage("Something went wrong.")
+                                        .setPositiveButton("OK", null)
+                                        .show()
+                                }
+                            }
+                        }
+                    }
+                    .setNegativeButton("NO", null)
+                    .show()
+            }
         }
     }
 
