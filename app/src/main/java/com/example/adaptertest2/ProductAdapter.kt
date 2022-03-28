@@ -36,6 +36,7 @@ class ProductAdapter(private val list: MutableList<ProductItemX>): RecyclerView.
                 intent.putExtra("desc", current.description)
                 intent.putExtra("id", current.id)
                 intent.putExtra("quantity", current.quantity)
+                intent.putExtra("store_owner_id", current.store_owner?.id)
                 startActivity(context,intent,null)
             }
         }
@@ -48,5 +49,10 @@ class ProductAdapter(private val list: MutableList<ProductItemX>): RecyclerView.
     fun addItem(prod: ProductItemX){
         list.add(prod)
         notifyItemInserted(list.size - 1)
+    }
+
+    fun clear(){
+        list.clear()
+        notifyDataSetChanged()
     }
 }

@@ -148,7 +148,7 @@ class MyAccount : Fragment() {
             val updateName = bottomSheetView.findViewById<EditText>(R.id.updateName)
             val farmersCooperative = bottomSheetView.findViewById<TextView>(R.id.coop)
             val coopSelector = bottomSheetView.findViewById<Button>(R.id.coopSelector)
-            val address = bottomSheetView.findViewById<EditText>(R.id.address)
+            val addressEditText = bottomSheetView.findViewById<EditText>(R.id.address)
             val addressCard = bottomSheetView.findViewById<CardView>(R.id.addressCard)
             val coopCard = bottomSheetView.findViewById<CardView>(R.id.coopCard)
             val chooseImage = bottomSheetView.findViewById<Button>(R.id.chooseImage)
@@ -223,7 +223,7 @@ class MyAccount : Fragment() {
                 }else{
                     val jsonObject = JSONObject()
                     jsonObject.put("name", updateName.text.toString())
-                    jsonObject.put("address", address.text.toString())
+                    jsonObject.put("address", addressEditText.text.toString())
                     jsonObject.put("password", password.text.toString())
                     jsonObject.put("farmers_cooperative_id", "${coopId.text}|${farmersCooperative.text}")
                     jsonObject.put("phone", contact.text.toString())
@@ -278,6 +278,7 @@ class MyAccount : Fragment() {
                                     .show()
                                 bottomSheet.dismiss()
                                 Glide.with(requireContext()).load("https://yourzaj.xyz/$image").error(R.drawable.ic_baseline_account_circle_24).into(profileImage)
+                                address.text = addressEditText.text.toString()
 
                             }else{
                                 alerts.somethingWentWrongAlert()

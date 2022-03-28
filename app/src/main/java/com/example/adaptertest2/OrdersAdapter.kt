@@ -59,7 +59,7 @@ class OrdersAdapter(private val list: MutableList<OrdersItem>): RecyclerView.Ada
             remarks.text = current.remarks
             subtotal.text = "PHP ${current.subTotal}"
             vatDue.text = "PHP ${current.vatDue}"
-            vatRate.text = "PHP ${current.vatRate}"
+            vatRate.text = "${current.vatRate}%"
             total.text = "PHP ${current.total}"
             status.text = current.status
 
@@ -67,7 +67,7 @@ class OrdersAdapter(private val list: MutableList<OrdersItem>): RecyclerView.Ada
 
             if(current.status == "Packaging"){
                 statusBackground.setBackgroundColor(resources.getColor(R.color.packaging))
-            }else if(current.status == "Deliver"){
+            }else if(current.status == "Delivery"){
                 statusBackground.setBackgroundColor(resources.getColor(R.color.teal_200))
             }else{
                 statusBackground.setBackgroundColor(resources.getColor(R.color.green))

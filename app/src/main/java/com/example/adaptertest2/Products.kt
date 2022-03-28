@@ -7,6 +7,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.CoroutineScope
@@ -59,7 +61,7 @@ class Products : Fragment() {
         val progressbar = ProgressBar()
         val progress = progressbar.showProgressBar(requireContext(), R.layout.loading, "Loading...", R.id.progressText)
         val alerts = RequestAlerts(requireContext())
-
+        val noStores = view.findViewById<LinearLayout>(R.id.noStores)
         CoroutineScope(Dispatchers.IO).launch {
             val storeMaster = try{ RetrofitInstance.retro.getStoreMaster() }
             catch(e: SocketTimeoutException){
@@ -78,9 +80,15 @@ class Products : Fragment() {
             }
             withContext(Dispatchers.Main){
                 progress.dismiss()
-                for(i in storeMaster.indices){
-                    storeMasterAdapter.addItem(storeMaster[i])
+                if(storeMaster.isNotEmpty()){
+                    noStores.isVisible = false
+                    for(i in storeMaster.indices){
+                        storeMasterAdapter.addItem(storeMaster[i])
+                    }
+                }else{
+                    noStores.isVisible = true
                 }
+
             }
         }
     }

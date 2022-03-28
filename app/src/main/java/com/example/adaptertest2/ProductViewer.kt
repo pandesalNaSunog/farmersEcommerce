@@ -58,6 +58,13 @@ class ProductViewer : AppCompatActivity() {
 
         val addToWishList = findViewById<Button>(R.id.addToWishList)
 
+
+        val storeOwnerId = intent.getIntExtra("store_owner_id", 0)
+
+
+
+
+
         val image = intent.getStringExtra("image")
         val name = intent.getStringExtra("name")
         val price = intent.getStringExtra("price")
@@ -65,6 +72,12 @@ class ProductViewer : AppCompatActivity() {
         val id = intent.getIntExtra("id",0)
         val qty = intent.getStringExtra("quantity")
         Log.e("id", id.toString())
+
+
+
+        addToCart.isVisible = qty?.toInt() != 0 && user?.id != storeOwnerId
+
+        addToWishList.isVisible = user?.id != storeOwnerId
 
         Glide.with(this).load("https://yourzaj.xyz/$image").into(imageView)
         nameView.text = name
@@ -149,7 +162,7 @@ class ProductViewer : AppCompatActivity() {
             val writeComment = feedbackView.findViewById<EditText>(R.id.writeComment)
             val feedbackRecycler = feedbackView.findViewById<RecyclerView>(R.id.feedbackRecycler)
             val feedbackAdapter = FeedBackAdapter(mutableListOf())
-
+            val nofeedBacks = feedbackView.findViewById<LinearLayout>(R.id.noFeedBacks)
 
             val one = feedbackView.findViewById<ImageView>(R.id.one)
             val two = feedbackView.findViewById<ImageView>(R.id.two)
@@ -211,8 +224,13 @@ class ProductViewer : AppCompatActivity() {
 
                 withContext(Dispatchers.Main){
                     progress.dismiss()
-                    for(i in feedbackResponse.feedbacks.indices){
-                        feedbackAdapter.addItem(feedbackResponse.feedbacks[i])
+                    if(feedbackResponse.feedbacks.isNotEmpty()){
+                        nofeedBacks.isVisible = false
+                        for(i in feedbackResponse.feedbacks.indices){
+                            feedbackAdapter.addItem(feedbackResponse.feedbacks[i])
+                        }
+                    }else{
+                        nofeedBacks.isVisible = true
                     }
                 }
             }

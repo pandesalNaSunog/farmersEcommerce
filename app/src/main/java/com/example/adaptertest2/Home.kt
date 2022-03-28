@@ -1,5 +1,7 @@
 package com.example.adaptertest2
 
+import android.app.AlertDialog
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -15,6 +17,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import retrofit2.HttpException
 import java.net.SocketTimeoutException
 
 // TODO: Rename parameter arguments, choose names that match
@@ -52,7 +55,8 @@ class Home : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val noProducts = view.findViewById<LinearLayout>(R.id.noProducts)
-
+        val db = UserDatabase(requireContext())
+        val token = db.getToken()
         val productRecycler = view.findViewById<RecyclerView>(R.id.productRecycler)
         val productAdapter = ProductAdapter(mutableListOf())
         productRecycler.adapter = productAdapter
@@ -83,6 +87,37 @@ class Home : Fragment() {
                     productAdapter.addItem(products[i])
                 }
                 noProducts.isVisible = products.size == 0
+            }
+        }
+        CoroutineScope(Dispatchers.IO).launch {
+            val products = try{ RetrofitInstance.retro.getCartItems("Bearer $token") }
+            catch(e: SocketTimeoutException){
+                withContext(Dispatchers.Main){
+                    progress.dismiss()
+                    alerts.showSocketTimeOutAlert()
+                }
+                return@launch
+            }catch(e: HttpException){
+                withContext(Dispatchers.Main){
+                    progress.dismiss()
+                    AlertDialog.Builder(requireContext())
+                        .setTitle("Error")
+                        .setMessage("You're not authorized to use the application. Your account might have been deleted. Please sign up for a new account")
+                        .setCancelable(false)
+                        .setPositiveButton("OK"){_,_->
+                            val intent = Intent(requireContext(), MainActivity::class.java)
+                            startActivity(intent)
+                            activity?.finishAffinity()
+                        }
+                        .show()
+                }
+                return@launch
+            }catch(e: Exception){
+                withContext(Dispatchers.Main){
+                    progress.dismiss()
+                    alerts.noInternetAlert()
+                }
+                return@launch
             }
         }
     }

@@ -61,6 +61,8 @@ class SellerProductAdapter(private val list: MutableList<ProductItemX>): Recycle
                 feedbackRecycler.adapter = feedbackAdapter
                 feedbackRecycler.layoutManager = LinearLayoutManager(context)
 
+                val noFeedbacks = feedbackView.findViewById<LinearLayout>(R.id.noFeedBacks)
+
                 var progressBar = ProgressBar()
                 var progress = progressBar.showProgressBar(context,R.layout.loading, "Loading", R.id.progressText)
                 var alerts = RequestAlerts(context)
@@ -84,9 +86,15 @@ class SellerProductAdapter(private val list: MutableList<ProductItemX>): Recycle
 
                     withContext(Dispatchers.Main){
                         progress.dismiss()
-                        for(i in feedbackResponse.feedbacks.indices){
-                            feedbackAdapter.addItem(feedbackResponse.feedbacks[i])
+                        if(feedbackResponse.feedbacks.isNotEmpty()){
+                            noFeedbacks.isVisible = false
+                            for(i in feedbackResponse.feedbacks.indices){
+                                feedbackAdapter.addItem(feedbackResponse.feedbacks[i])
+                            }
+                        }else{
+                            noFeedbacks.isVisible = true
                         }
+
                     }
                 }
 
