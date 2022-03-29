@@ -88,7 +88,7 @@
         android:layout_height="0dp"
         android:gravity="center"
         android:orientation="vertical"
-        app:layout_constraintBottom_toTopOf="@+id/gridLayout"
+        app:layout_constraintBottom_toTopOf="@+id/buttonGroup"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/constraintLayout2">
@@ -114,24 +114,25 @@
     </LinearLayout>
 
 
-    <GridLayout
-        android:id="@+id/gridLayout"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/buttonGroup"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:columnCount="2"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
         <android.widget.Button
+            android:id="@+id/clearCart"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10sp"
+            android:layout_marginTop="10sp"
+            android:layout_marginRight="10sp"
+            android:background="@drawable/green_stroke_btn"
             android:paddingLeft="20sp"
             android:paddingRight="20sp"
-            android:id="@+id/clearCart"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="10sp"
-            android:background="@drawable/green_stroke_btn"
-
             android:text="clear cart"
             android:textColor="@color/darkGreen"
             android:textSize="20sp"
@@ -141,13 +142,13 @@
             app:layout_constraintStart_toStartOf="parent" />
 
         <android.widget.Button
-            android:paddingLeft="20sp"
-            android:paddingRight="20sp"
             android:id="@+id/checkout"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10sp"
             android:background="@drawable/green_solid_btn"
+            android:paddingLeft="20sp"
+            android:paddingRight="20sp"
             android:text="checkout"
             android:textColor="@color/white"
             android:textSize="20sp"
@@ -155,7 +156,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
-    </GridLayout>
+    </LinearLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

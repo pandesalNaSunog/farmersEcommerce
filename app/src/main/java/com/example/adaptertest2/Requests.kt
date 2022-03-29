@@ -84,4 +84,7 @@ interface Requests {
 
     @GET("/api/search-products")
     suspend fun searchProducts(@Query("keyword") keyword: String): Product
+
+    @POST("/api/update-quantity")
+    suspend fun updateQuantity(@Header("Authorization") token: String, @Body request: RequestBody): Response<ResponseBody>
 }

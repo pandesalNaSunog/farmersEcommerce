@@ -34,7 +34,7 @@ class SearchedProducts : AppCompatActivity() {
             if(searchText.text.isEmpty()){
                 searchText.error = "Please fill out this field"
             }else{
-                searchProducts(keyword!!, productAdapter, searchKeyword)
+                searchProducts(searchText.text.toString(), productAdapter, searchKeyword)
             }
         }
         searchProducts(keyword!!, productAdapter, searchKeyword)

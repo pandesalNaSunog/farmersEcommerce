@@ -171,17 +171,19 @@ class MyAccount : Fragment() {
             }
             var coopName = ""
 
-            if(user!!.type != "seller"){
-                storeNameCard.isVisible = false
-                coopIdCard.isVisible = false
-                coopCard.isVisible = false
-                addressCard.isVisible = false
-            }else{
+            if(user!!.type == "seller"){
                 storeNameCard.isVisible = true
                 coopIdCard.isVisible = true
                 coopCard.isVisible = true
                 addressCard.isVisible = true
+            }else{
+                storeNameCard.isVisible = false
+                coopIdCard.isVisible = false
+                coopCard.isVisible = false
+                addressCard.isVisible = true
             }
+
+            Log.e("MyAccount", user!!.type.toString())
 
             if(storeName.text.isEmpty()){
                     storeName.setText(user!!.store_name)

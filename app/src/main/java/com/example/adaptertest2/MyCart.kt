@@ -6,10 +6,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.widget.Button
 import android.widget.EditText
-import android.widget.GridLayout
 import android.widget.LinearLayout
 import androidx.appcompat.app.AlertDialog
-import androidx.core.view.LayoutInflaterCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -18,10 +16,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import okhttp3.Dispatcher
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
-import okhttp3.internal.http.RetryAndFollowUpInterceptor
 import org.json.JSONObject
 import java.net.SocketTimeoutException
 
@@ -47,7 +43,7 @@ class MyCart : AppCompatActivity() {
         val shopNow = findViewById<Button>(R.id.shopNow)
         val cartIsEmpty = findViewById<LinearLayout>(R.id.cartIsEmpty)
         val cleartCart = findViewById<Button>(R.id.clearCart)
-        val buttonGroup = findViewById<GridLayout>(R.id.gridLayout)
+        val buttonGroup = findViewById<LinearLayout>(R.id.buttonGroup)
         val db = UserDatabase(this)
         val user = db.getAll()
         val token = db.getToken()

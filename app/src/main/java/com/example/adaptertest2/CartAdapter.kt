@@ -17,7 +17,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
 import java.net.SocketTimeoutException
 
-class CartAdapter(private val list: MutableList<CartItem>, private val clearCart: GridLayout, private val cartIsEmpty: LinearLayout): RecyclerView.Adapter<CartAdapter.Holder>() {
+class CartAdapter(private val list: MutableList<CartItem>, private val clearCart: LinearLayout, private val cartIsEmpty: LinearLayout): RecyclerView.Adapter<CartAdapter.Holder>() {
     class Holder(itemView: View): RecyclerView.ViewHolder(itemView)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {

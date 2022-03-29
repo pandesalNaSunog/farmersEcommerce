@@ -4,7 +4,9 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -25,7 +27,7 @@ class ProductsPerCategory : AppCompatActivity() {
                 search.goToSearchProducts(searchText.text.toString())
             }
         }
-
+        val noproducts = findViewById<LinearLayout>(R.id.noProducts)
         val title = intent.getStringExtra("title")
         val titleText = findViewById<TextView>(R.id.textView7)
         val bundle = intent.extras
@@ -36,8 +38,15 @@ class ProductsPerCategory : AppCompatActivity() {
         productRecycler.layoutManager = GridLayoutManager(this,2)
         titleText.text = title
 
-        for(i in productList.indices){
-            productAdapter.addItem(productList[i])
+
+        if(productList.isNotEmpty()){
+            for(i in productList.indices){
+                productAdapter.addItem(productList[i])
+            }
+            noproducts.isVisible = false
+        }else{
+            noproducts.isVisible = true
         }
+
     }
 }

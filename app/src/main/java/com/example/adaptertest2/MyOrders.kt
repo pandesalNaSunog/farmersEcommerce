@@ -5,6 +5,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.CoroutineScope
@@ -56,7 +58,7 @@ class MyOrders : Fragment() {
         val progressBar = ProgressBar()
         val progress = progressBar.showProgressBar(requireContext(),R.layout.loading, "Loading...", R.id.progressText)
         val alerts = RequestAlerts(requireContext())
-
+        val noOrders = view.findViewById<LinearLayout>(R.id.noOrders)
         CoroutineScope(Dispatchers.IO).launch {
             val orders = try{ RetrofitInstance.retro.getOrders("Bearer $token") }
             catch(e: SocketTimeoutException){
@@ -75,9 +77,15 @@ class MyOrders : Fragment() {
 
             withContext(Dispatchers.Main){
                 progress.dismiss()
-                for(i in orders.indices){
-                    ordersAdapter.addItem(orders[i])
+                if(orders.isNotEmpty()){
+                    noOrders.isVisible = false
+                    for(i in orders.indices){
+                        ordersAdapter.addItem(orders[i])
+                    }
+                }else{
+                    noOrders.isVisible = true
                 }
+
             }
         }
     }

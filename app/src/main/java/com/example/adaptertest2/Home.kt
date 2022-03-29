@@ -57,6 +57,7 @@ class Home : Fragment() {
         val noProducts = view.findViewById<LinearLayout>(R.id.noProducts)
         val db = UserDatabase(requireContext())
         val token = db.getToken()
+        val user = db.getAll()
         val productRecycler = view.findViewById<RecyclerView>(R.id.productRecycler)
         val productAdapter = ProductAdapter(mutableListOf())
         productRecycler.adapter = productAdapter

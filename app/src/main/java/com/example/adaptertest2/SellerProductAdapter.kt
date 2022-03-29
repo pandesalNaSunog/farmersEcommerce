@@ -40,10 +40,82 @@ class SellerProductAdapter(private val list: MutableList<ProductItemX>): Recycle
             val image = findViewById<ImageView>(R.id.image)
             val name = findViewById<TextView>(R.id.name)
             val quantity = findViewById<TextView>(R.id.quantity)
+            val updateQuantity = findViewById<Button>(R.id.updateQuantity)
             price.text = "PHP ${current.price}"
             Glide.with(context).load("https://yourzaj.xyz/${current.image}").into(image)
             name.text = current.name
             quantity.text = "Qty: ${current.quantity}"
+
+            updateQuantity.setOnClickListener {
+                var quantityValue = 0
+                val alert = AlertDialog.Builder(context)
+                val alertView = LayoutInflater.from(context).inflate(R.layout.quantity_selector, null)
+                alert.setView(alertView)
+                val show = alert.show()
+
+                val increase = alertView.findViewById<Button>(R.id.increase)
+                val decrese = alertView.findViewById<Button>(R.id.decrease)
+                val quantityText = alertView.findViewById<TextView>(R.id.quantityText)
+                val confirm = alertView.findViewById<Button>(R.id.confirm)
+                quantityValue = current.quantity!!.toInt()
+                quantityText.text = current.quantity
+
+                increase.setOnClickListener {
+                    quantityValue++
+                    quantityText.text = quantityValue.toString()
+                }
+                decrese.setOnClickListener {
+                    if(quantityValue != 1) {
+                        quantityValue--
+                        quantityText.text = quantityValue.toString()
+                    }
+                }
+
+                confirm.setOnClickListener {
+                    val progressBar = ProgressBar()
+                    val progress = progressBar.showProgressBar(context,R.layout.loading,"Updating...",R.id.progressText)
+                    val alerts = RequestAlerts(context)
+
+                    val jsonObject = JSONObject()
+                    jsonObject.put("product_id", current.id)
+                    jsonObject.put("quantity", quantityText.text.toString())
+
+                    val request = jsonObject.toString().toRequestBody("application/json".toMediaTypeOrNull())
+
+                    CoroutineScope(Dispatchers.IO).launch {
+                        val updateResponse = try{ RetrofitInstance.retro.updateQuantity("Bearer $token",request) }
+                        catch(e: SocketTimeoutException){
+                            withContext(Dispatchers.Main){
+                                progress.dismiss()
+                                alerts.showSocketTimeOutAlert()
+                            }
+                            return@launch
+                        }catch(e: Exception){
+                            withContext(Dispatchers.Main){
+                                progress.dismiss()
+                                alerts.noInternetAlert()
+                            }
+                            return@launch
+                        }
+
+                        withContext(Dispatchers.Main){
+                            progress.dismiss()
+                            if(updateResponse.code() == 200){
+                                AlertDialog.Builder(context)
+                                    .setTitle("Success")
+                                    .setMessage("Product quantity successfully updated.")
+                                    .setPositiveButton("OK", null)
+                                    .show()
+                                show.dismiss()
+                                quantity.text = "Qty: ${quantityText.text.toString()}"
+                            }else{
+                                show.dismiss()
+                                alerts.somethingWentWrongAlert()
+                            }
+                        }
+                    }
+                }
+            }
 
             viewFeedBacks.setOnClickListener {
                 val feedbackSheet = BottomSheetDialog(context)

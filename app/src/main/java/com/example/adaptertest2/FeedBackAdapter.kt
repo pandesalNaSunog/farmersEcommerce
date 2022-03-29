@@ -22,7 +22,7 @@ class FeedBackAdapter(private val list: MutableList<Feedback>): RecyclerView.Ada
             val name = findViewById<TextView>(R.id.userName)
             val message = findViewById<TextView>(R.id.message)
 
-            Glide.with(context).load("https://yourzaj.xyz/${curr.user?.image}").into(image)
+            Glide.with(context).load("https://yourzaj.xyz/${curr.user?.image}").error(R.drawable.ic_baseline_account_dark_circle_24).into(image)
             name.text = curr.user?.name
             message.text = curr.message
         }

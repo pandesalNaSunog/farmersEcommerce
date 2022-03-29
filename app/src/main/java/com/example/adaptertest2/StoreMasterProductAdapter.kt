@@ -36,6 +36,7 @@ class StoreMasterProductAdapter(private val list: MutableList<StoreMasterProduct
                 intent.putExtra("desc", current.description)
                 intent.putExtra("id", current.id)
                 intent.putExtra("quantity", current.quantity)
+                intent.putExtra("store_owner_id", current.store_owner.id)
                 startActivity(context,intent,null)
             }
         }
