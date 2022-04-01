@@ -135,7 +135,7 @@ class StoreLocations : AppCompatActivity(), OnMapReadyCallback {
                         val lng = coordinates[1].toDouble()
 
                         val storeLocation = LatLng(lat,lng)
-                        mMap.addMarker(MarkerOptions().position(storeLocation).title(storeMaster[i].store_name))
+                        mMap.addMarker(MarkerOptions().position(storeLocation).title(storeMaster[i].store_name).snippet(storeMaster[i].farmers_cooperative_id.split("|")[1]))
                     }
                 }
             }
