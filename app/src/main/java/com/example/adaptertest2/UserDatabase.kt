@@ -11,7 +11,7 @@ import android.database.sqlite.SQLiteOpenHelper
 class UserDatabase(context: Context): SQLiteOpenHelper(context, databaseName, null, databaseVersion) {
     companion object{
         private const val databaseName = "user"
-        private const val databaseVersion = 2
+        private const val databaseVersion = 3
         private const val tableName = "user_tbl"
 
         private const val id = "id"

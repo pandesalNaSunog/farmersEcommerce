@@ -1,8 +1,11 @@
 package com.example.adaptertest2
 
 import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
+import android.location.LocationManager
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -74,8 +77,21 @@ class More : Fragment() {
         }
 
         showStoreLocations.setOnClickListener {
-            val intent = Intent(requireContext(), StoreLocations::class.java)
-            startActivity(intent)
+            val locationManager = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
+            val gpsStatus = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+
+            if(gpsStatus){
+                val intent = Intent(requireContext(), StoreLocations::class.java)
+                startActivity(intent)
+            }else{
+                AlertDialog.Builder(requireContext())
+                    .setTitle("Error")
+                    .setMessage("Please turn your location services on first.")
+                    .setPositiveButton("OK"){_,_->
+                        val intent1 = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                        startActivity(intent1)
+                    }.show()
+            }
         }
 
         myStore.setOnClickListener {

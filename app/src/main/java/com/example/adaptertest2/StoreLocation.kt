@@ -1,11 +1,14 @@
 package com.example.adaptertest2
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.location.LocationManager
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
 import android.widget.Button
@@ -42,87 +45,100 @@ class StoreLocation : AppCompatActivity() {
         val generate = findViewById<Button>(R.id.generate)
 
         generate.setOnClickListener {
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-                if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-                    val task = client.lastLocation
-                    task.addOnSuccessListener {
-                        val latitude = it.latitude
-                        val longitude = it.longitude
+            val locationManager = this.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+            val gpsStatus = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
 
-                        val submissionAlert = AlertDialog.Builder(this)
-                        val subMissionAlertView = LayoutInflater.from(this).inflate(R.layout.submit_location_coordinates,null)
-                        submissionAlert.setView(subMissionAlertView)
+            if(gpsStatus){
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+                    if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+                        val task = client.lastLocation
+                        task.addOnSuccessListener {
+                            val latitude = it.latitude
+                            val longitude = it.longitude
 
-                        val submit = subMissionAlertView.findViewById<Button>(R.id.submit)
-                        val lat = subMissionAlertView.findViewById<TextView>(R.id.lat)
-                        val lng = subMissionAlertView.findViewById<TextView>(R.id.lng)
+                            val submissionAlert = AlertDialog.Builder(this)
+                            val subMissionAlertView = LayoutInflater.from(this).inflate(R.layout.submit_location_coordinates,null)
+                            submissionAlert.setView(subMissionAlertView)
 
-                        lat.text = "Lat: $latitude"
-                        lng.text = "Lng: $longitude"
+                            val submit = subMissionAlertView.findViewById<Button>(R.id.submit)
+                            val lat = subMissionAlertView.findViewById<TextView>(R.id.lat)
+                            val lng = subMissionAlertView.findViewById<TextView>(R.id.lng)
 
-                        submit.setOnClickListener {
-                            val jsonObject = JSONObject()
-                            jsonObject.put("name", name)
-                            jsonObject.put("store_name", storeName)
-                            jsonObject.put("email", email)
-                            jsonObject.put("password", password)
-                            jsonObject.put("type", type)
-                            jsonObject.put("farmers_cooperative_id", coopId)
-                            jsonObject.put("phone", contact)
-                            jsonObject.put("coordinates", "$latitude,$longitude")
+                            lat.text = "Lat: $latitude"
+                            lng.text = "Lng: $longitude"
 
-                            val request = jsonObject.toString().toRequestBody("application/json".toMediaTypeOrNull())
+                            submit.setOnClickListener {
+                                val jsonObject = JSONObject()
+                                jsonObject.put("name", name)
+                                jsonObject.put("store_name", storeName)
+                                jsonObject.put("email", email)
+                                jsonObject.put("password", password)
+                                jsonObject.put("type", type)
+                                jsonObject.put("farmers_cooperative_id", coopId)
+                                jsonObject.put("phone", contact)
+                                jsonObject.put("coordinates", "$latitude,$longitude")
 
-                            val progressBar = ProgressBar()
-                            val progress = progressBar.showProgressBar(this,R.layout.loading,"Submitting...", R.id.progressText)
-                            val alerts = RequestAlerts(this)
-                            CoroutineScope(Dispatchers.IO).launch {
-                                val registerResponse = try{ RetrofitInstance.retro.register(request) }
-                                catch(e: SocketTimeoutException){
-                                    withContext(Dispatchers.Main){
-                                        progress.dismiss()
-                                        alerts.showSocketTimeOutAlert()
-                                    }
-                                    Log.e("location", e.toString())
-                                    return@launch
-                                }catch(e: Exception){
-                                    withContext(Dispatchers.Main){
-                                        progress.dismiss()
-                                        alerts.noInternetAlert()
-                                    }
-                                    Log.e("location", e.toString())
-                                    return@launch
-                                }
+                                val request = jsonObject.toString().toRequestBody("application/json".toMediaTypeOrNull())
 
-                                withContext(Dispatchers.Main){
-                                    progress.dismiss()
-                                    if(registerResponse.isSuccessful){
-                                        try{
-                                            val gson = GsonBuilder().setPrettyPrinting().create()
-                                            val json = gson.toJson(JsonParser.parseString(registerResponse.body()?.string()))
-
-                                            Log.e("StoreLocation", json)
-
-                                            val intent = Intent(this@StoreLocation, VerificationCode::class.java)
-                                            intent.putExtra("type", type)
-                                            intent.putExtra("contact", contact)
-                                            startActivity(intent)
-                                            finish()
-                                        }catch(e: Exception){
-                                            Log.e("Store", e.toString())
+                                val progressBar = ProgressBar()
+                                val progress = progressBar.showProgressBar(this,R.layout.loading,"Submitting...", R.id.progressText)
+                                val alerts = RequestAlerts(this)
+                                CoroutineScope(Dispatchers.IO).launch {
+                                    val registerResponse = try{ RetrofitInstance.retro.register(request) }
+                                    catch(e: SocketTimeoutException){
+                                        withContext(Dispatchers.Main){
+                                            progress.dismiss()
+                                            alerts.showSocketTimeOutAlert()
                                         }
+                                        Log.e("location", e.toString())
+                                        return@launch
+                                    }catch(e: Exception){
+                                        withContext(Dispatchers.Main){
+                                            progress.dismiss()
+                                            alerts.noInternetAlert()
+                                        }
+                                        Log.e("location", e.toString())
+                                        return@launch
+                                    }
 
-                                    }else{
-                                        Log.e("Error", registerResponse.errorBody().toString())
+                                    withContext(Dispatchers.Main){
+                                        progress.dismiss()
+                                        if(registerResponse.isSuccessful){
+                                            try{
+                                                val gson = GsonBuilder().setPrettyPrinting().create()
+                                                val json = gson.toJson(JsonParser.parseString(registerResponse.body()?.string()))
+
+                                                Log.e("StoreLocation", json)
+
+                                                val intent = Intent(this@StoreLocation, VerificationCode::class.java)
+                                                intent.putExtra("type", type)
+                                                intent.putExtra("contact", contact)
+                                                startActivity(intent)
+                                                finish()
+                                            }catch(e: Exception){
+                                                Log.e("Store", e.toString())
+                                            }
+
+                                        }else{
+                                            Log.e("Error", registerResponse.errorBody().toString())
+                                        }
                                     }
                                 }
                             }
+                            submissionAlert.show()
                         }
-                        submissionAlert.show()
+                    }else{
+                        ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION),1)
                     }
-                }else{
-                    ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),1)
                 }
+            }else{
+                android.app.AlertDialog.Builder(this)
+                    .setTitle("Error")
+                    .setMessage("Please turn your location services on first.")
+                    .setPositiveButton("OK"){_,_->
+                        val intent1 = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                        startActivity(intent1)
+                    }.show()
             }
         }
 
