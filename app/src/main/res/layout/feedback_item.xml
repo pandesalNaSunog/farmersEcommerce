@@ -30,6 +30,36 @@
             app:layout_constraintStart_toEndOf="@+id/userImage"
             app:layout_constraintTop_toTopOf="parent">
 
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:id="@+id/one"
+                    android:layout_width="15sp"
+                    android:layout_height="15sp"
+                    android:src="@drawable/ic_baseline_star_24"/>
+                <ImageView
+                    android:id="@+id/two"
+                    android:layout_width="15sp"
+                    android:layout_height="15sp"
+                    android:src="@drawable/ic_baseline_star_24"/>
+                <ImageView
+                    android:id="@+id/three"
+                    android:layout_width="15sp"
+                    android:layout_height="15sp"
+                    android:src="@drawable/ic_baseline_star_24"/>
+                <ImageView
+                    android:id="@+id/four"
+                    android:layout_width="15sp"
+                    android:layout_height="15sp"
+                    android:src="@drawable/ic_baseline_star_24"/>
+                <ImageView
+                    android:id="@+id/five"
+                    android:layout_width="15sp"
+                    android:layout_height="15sp"
+                    android:src="@drawable/ic_baseline_star_24"/>
+            </LinearLayout>
             <TextView
                 android:id="@+id/userName"
                 android:layout_width="wrap_content"

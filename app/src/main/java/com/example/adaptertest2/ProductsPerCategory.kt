@@ -41,7 +41,9 @@ class ProductsPerCategory : AppCompatActivity() {
 
         if(productList.isNotEmpty()){
             for(i in productList.indices){
-                productAdapter.addItem(productList[i])
+                if(productList[i].store_owner != null) {
+                    productAdapter.addItem(productList[i])
+                }
             }
             noproducts.isVisible = false
         }else{

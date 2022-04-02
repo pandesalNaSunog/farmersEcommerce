@@ -85,7 +85,9 @@ class Home : Fragment() {
             withContext(Dispatchers.Main){
                 progress.dismiss()
                 for(i in products.indices){
-                    productAdapter.addItem(products[i])
+                    if(products[i].store_owner != null) {
+                        productAdapter.addItem(products[i])
+                    }
                 }
                 noProducts.isVisible = products.size == 0
             }
@@ -106,6 +108,7 @@ class Home : Fragment() {
                         .setMessage("You're not authorized to use the application. Your account might have been deleted. Please sign up for a new account")
                         .setCancelable(false)
                         .setPositiveButton("OK"){_,_->
+                            db.deleteAll()
                             val intent = Intent(requireContext(), MainActivity::class.java)
                             startActivity(intent)
                             activity?.finishAffinity()

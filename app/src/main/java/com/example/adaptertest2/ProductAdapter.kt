@@ -1,6 +1,7 @@
 package com.example.adaptertest2
 
 import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -33,6 +34,8 @@ class ProductAdapter(private val list: MutableList<ProductItemX>): RecyclerView.
             Glide.with(context).load("https://yourzaj.xyz/${current.image}").into(image)
             name.text = current.name
             owned.isVisible = user?.id == current.store_owner?.id
+
+            Log.e("Product Adapter", "user_id = ${user?.id}, store owner id = ${current.store_owner?.id}")
 
             card.setOnClickListener {
                 val intent = Intent(context,ProductViewer::class.java)
