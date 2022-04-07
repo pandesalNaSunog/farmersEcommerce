@@ -6,4 +6,7 @@
     <item android:title="Sales"
         android:icon="@drawable/ic_baseline_show_chart_24"
         android:id="@+id/sales"/>
+    <item android:title="My Store Orders"
+        android:icon="@drawable/ic_baseline_receipt_24"
+        android:id="@+id/myStoreOrders2"/>
 </menu>

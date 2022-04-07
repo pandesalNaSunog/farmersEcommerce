@@ -139,6 +139,12 @@ class MainActivity : AppCompatActivity() {
                             val intent = Intent(this@MainActivity, Navigation::class.java)
                             startActivity(intent)
                             finishAffinity()
+                        }else{
+                            AlertDialog.Builder(this@MainActivity)
+                                .setTitle("Error")
+                                .setMessage("Account not found.")
+                                .setPositiveButton("OK", null)
+                                .show()
                         }
                     }
                 }

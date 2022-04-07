@@ -16,5 +16,6 @@ data class StoreOwnerXXX(
     val phone_verified_at: Any,
     val store_name: String,
     val type: String,
-    val updated_at: String
+    val updated_at: String,
+    val cooperative: String
 ):Serializable

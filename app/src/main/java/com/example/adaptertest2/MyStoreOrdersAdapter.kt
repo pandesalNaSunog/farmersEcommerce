@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -20,6 +21,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -30,10 +32,10 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
 import java.net.SocketTimeoutException
 
-class OrdersAdapter(private val list: MutableList<OrdersItem>): RecyclerView.Adapter<OrdersAdapter.Holder>() {
+class MyStoreOrdersAdapter(private val list: MutableList<StoreOrdersItem>): RecyclerView.Adapter<MyStoreOrdersAdapter.Holder>() {
     class Holder(itemView: View): RecyclerView.ViewHolder(itemView)
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
-        return Holder(LayoutInflater.from(parent.context).inflate(R.layout.order_item, parent, false))
+        return Holder(LayoutInflater.from(parent.context).inflate(R.layout.my_store_order_item, parent, false))
     }
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
@@ -43,7 +45,7 @@ class OrdersAdapter(private val list: MutableList<OrdersItem>): RecyclerView.Ada
             val statusBackground = findViewById<ConstraintLayout>(R.id.orderStatusBackground)
             val db = UserDatabase(context)
             val token = db.getToken()
-            val mark = findViewById<Button>(R.id.markAsReceived)
+            val viewReceipt = findViewById<Button>(R.id.viewReceipt)
             val address = findViewById<TextView>(R.id.address)
             val remarks = findViewById<TextView>(R.id.remarks)
             val subtotal = findViewById<TextView>(R.id.subtotal)
@@ -71,8 +73,6 @@ class OrdersAdapter(private val list: MutableList<OrdersItem>): RecyclerView.Ada
             total.text = "PHP ${current.total}"
             status.text = current.status
 
-            mark.isVisible = current.status != "Completed"
-
             if(current.status == "Packaging"){
                 statusBackground.setBackgroundColor(resources.getColor(R.color.packaging))
             }else if(current.status == "Delivery"){
@@ -81,19 +81,24 @@ class OrdersAdapter(private val list: MutableList<OrdersItem>): RecyclerView.Ada
                 statusBackground.setBackgroundColor(resources.getColor(R.color.green))
             }
 
-            mark.setOnClickListener{
-                AlertDialog.Builder(context)
-                    .setTitle("Mark as Received")
-                    .setMessage("To mark this order as received, you should upload any proof of transaction.")
-                    .setPositiveButton("OK") { _, _ ->
+            viewReceipt.setOnClickListener{
+                if(current.pop.isEmpty()){
+                    AlertDialog.Builder(context)
+                        .setTitle("Empty Proof of Payment")
+                        .setMessage("There is no proof of payment uploaded to this particular order.")
+                        .setPositiveButton("OK", null)
+                        .show()
+                }else{
+                    val alert = AlertDialog.Builder(context)
+                    val alertView = LayoutInflater.from(context).inflate(R.layout.receipt, null)
+                    alert.setView(alertView)
+                    alert.show()
 
+                    val popImage = alertView.findViewById<ImageView>(R.id.popImage)
 
+                    Glide.with(context).load("https://yourzaj.xyz/${current.pop[0].image}").error(R.drawable.ic_baseline_broken_image_24).into(popImage)
+                }
 
-                        val intent = Intent(context,ImageCapture::class.java)
-                        intent.putExtra("order_id", current.id)
-                        startActivity(context,intent,null)
-                    }
-                    .show()
             }
         }
     }
@@ -102,7 +107,7 @@ class OrdersAdapter(private val list: MutableList<OrdersItem>): RecyclerView.Ada
         return list.size
     }
 
-    fun addItem(orders: OrdersItem) {
+    fun addItem(orders: StoreOrdersItem) {
         list.add(orders)
         notifyItemInserted(list.size - 1)
     }

@@ -87,4 +87,7 @@ interface Requests {
 
     @POST("/api/update-quantity")
     suspend fun updateQuantity(@Header("Authorization") token: String, @Body request: RequestBody): Response<ResponseBody>
+
+    @GET("/api/my-store-orders")
+    suspend fun getMyStoreOrders(@Header("Authorization") token: String): StoreOrders
 }

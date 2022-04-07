@@ -15,4 +15,9 @@
         android:name="com.example.adaptertest2.Sales"
         android:label="fragment_sales"
         tools:layout="@layout/fragment_sales" />
+    <fragment
+        android:id="@+id/myStoreOrders2"
+        android:name="com.example.adaptertest2.MyStoreOrders"
+        android:label="fragment_my_store_orders"
+        tools:layout="@layout/fragment_my_store_orders" />
 </navigation>
