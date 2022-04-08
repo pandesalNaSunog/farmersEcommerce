@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Base64
+import android.util.Log
 import android.widget.Button
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
@@ -44,71 +45,79 @@ class ImageCapture : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        val uri = data?.data
+        if(requestCode == 100) {
 
-        try {
-            val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, uri)
-            val stream = ByteArrayOutputStream()
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 50, stream)
-            val bytes: ByteArray = stream.toByteArray()
 
-            val image = Base64.encodeToString(bytes, Base64.DEFAULT)
+            val uri = data?.data
 
-            val progressBar = ProgressBar()
-            val progress = progressBar.showProgressBar(
-                this,
-                R.layout.loading,
-                "Marking...",
-                R.id.progressText
-            )
-            val alerts = RequestAlerts(this)
+            try {
+                val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, uri)
+                val stream = ByteArrayOutputStream()
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 50, stream)
+                val bytes: ByteArray = stream.toByteArray()
 
-            val jsonObject = JSONObject()
-            jsonObject.put("order_id", orderId)
-            jsonObject.put("image", image)
+                val image = Base64.encodeToString(bytes, Base64.DEFAULT)
 
-            val request = jsonObject.toString()
-                .toRequestBody("application/json".toMediaTypeOrNull())
-            CoroutineScope(Dispatchers.IO).launch {
-                val markAsCompleteResponse = try {
-                    RetrofitInstance.retro.markOrderAsCompleted(
-                        "Bearer $token",
-                        request
-                    )
-                } catch (e: SocketTimeoutException) {
+                val progressBar = ProgressBar()
+                val progress = progressBar.showProgressBar(
+                    this,
+                    R.layout.loading,
+                    "Marking...",
+                    R.id.progressText
+                )
+                val alerts = RequestAlerts(this)
+
+                val jsonObject = JSONObject()
+                jsonObject.put("order_id", orderId)
+                jsonObject.put("image", image)
+
+                val request = jsonObject.toString()
+                    .toRequestBody("application/json".toMediaTypeOrNull())
+                CoroutineScope(Dispatchers.IO).launch {
+                    val markAsCompleteResponse = try {
+                        RetrofitInstance.retro.markOrderAsCompleted(
+                            "Bearer $token",
+                            request
+                        )
+                    } catch (e: SocketTimeoutException) {
+                        withContext(Dispatchers.Main) {
+                            progress.dismiss()
+                            alerts.showSocketTimeOutAlert()
+                        }
+                        return@launch
+                    } catch (e: Exception) {
+                        withContext(Dispatchers.Main) {
+                            progress.dismiss()
+                            alerts.noInternetAlert()
+                        }
+                        return@launch
+                    }
+
                     withContext(Dispatchers.Main) {
                         progress.dismiss()
-                        alerts.showSocketTimeOutAlert()
-                    }
-                    return@launch
-                } catch (e: Exception) {
-                    withContext(Dispatchers.Main) {
-                        progress.dismiss()
-                        alerts.noInternetAlert()
-                    }
-                    return@launch
-                }
-
-                withContext(Dispatchers.Main) {
-                    progress.dismiss()
-                    if (markAsCompleteResponse.code() == 200 && markAsCompleteResponse.headers()
-                            .contains(Pair("content-type", "application/json"))
-                    ) {
-                        Toast.makeText(this@ImageCapture, "Proof of transaction has been uploaded", Toast.LENGTH_LONG).show()
-                        val intent = Intent(this@ImageCapture, Navigation::class.java)
-                        startActivity(intent)
-                        finishAffinity()
-                    } else {
-                        AlertDialog.Builder(this@ImageCapture)
-                            .setTitle("Error")
-                            .setMessage("Something went wrong.")
-                            .setPositiveButton("OK", null)
-                            .show()
+                        if (markAsCompleteResponse.code() == 200 && markAsCompleteResponse.headers()
+                                .contains(Pair("content-type", "application/json"))
+                        ) {
+                            Toast.makeText(
+                                this@ImageCapture,
+                                "Proof of transaction has been uploaded",
+                                Toast.LENGTH_LONG
+                            ).show()
+                            val intent = Intent(this@ImageCapture, Navigation::class.java)
+                            startActivity(intent)
+                            finishAffinity()
+                        } else {
+                            AlertDialog.Builder(this@ImageCapture)
+                                .setTitle("Error")
+                                .setMessage("Something went wrong.")
+                                .setPositiveButton("OK", null)
+                                .show()
+                        }
                     }
                 }
+            } catch (e: Exception) {
+                Log.e("ImageCapture", e.toString())
             }
-        }catch(e: Exception){
-            e.printStackTrace()
         }
     }
 }
