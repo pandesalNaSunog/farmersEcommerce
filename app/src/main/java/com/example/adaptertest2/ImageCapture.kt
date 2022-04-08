@@ -13,6 +13,7 @@ import android.util.Base64
 import android.util.Log
 import android.widget.Button
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -41,13 +42,21 @@ class ImageCapture : AppCompatActivity() {
             token = db.getToken()
             orderId = intent.getIntExtra("order_id", 0)
             val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-            startActivityForResult(intent,100, null)
+            val resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
+                if(it.resultCode == RESULT_OK){
+                    val uri = it.data?.data
+                    Log.e("ImageCapture", uri.toString())
+                }
+            }
+            resultLauncher.launch(intent)
         }
     }
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        Log.e("ImageCapture", resultCode.toString())
+        if(resultCode == RESULT_OK && requestCode == 100) {
+            Log.e("ImageCapture", data?.data.toString())
+        }
 
 //        if(requestCode == 100 && resultCode == Activity.RESULT_OK) {
 //
