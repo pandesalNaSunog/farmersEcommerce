@@ -2,8 +2,11 @@ package com.example.adaptertest2
 
 import android.Manifest
 import android.app.AlertDialog
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -13,16 +16,17 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
 import androidx.core.app.ActivityCompat
+import androidx.core.app.ActivityCompat.getSystemService
 import androidx.core.app.ActivityCompat.requestPermissions
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
+import okhttp3.Dispatcher
 import retrofit2.HttpException
 import java.net.SocketTimeoutException
 
@@ -60,7 +64,7 @@ class Home : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
+        var isRequestingNotification = true
         val noProducts = view.findViewById<LinearLayout>(R.id.noProducts)
         val db = UserDatabase(requireContext())
         val token = db.getToken()
@@ -73,6 +77,13 @@ class Home : Fragment() {
         val progressBar = ProgressBar()
         val progress = progressBar.showProgressBar(requireContext(),R.layout.loading,"Loading...",R.id.progressText)
         val alerts = RequestAlerts(requireContext())
+
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            val channel = NotificationChannel("My Notification", "My Notification", NotificationManager.IMPORTANCE_DEFAULT)
+            val manager = getSystemService(requireContext(), NotificationManager::class.java)
+            manager?.createNotificationChannel(channel)
+        }
         CoroutineScope(Dispatchers.IO).launch {
             val products = try{ RetrofitInstance.retro.getProducts() }
             catch(e: SocketTimeoutException){
@@ -98,6 +109,33 @@ class Home : Fragment() {
                 }
                 noProducts.isVisible = products.size == 0
             }
+        }
+
+        CoroutineScope(Dispatchers.IO).launch {
+            isRequestingNotification = true
+            do{
+                val notifications = try{ RetrofitInstance.retro.getNotifications("Bearer $token") }
+                catch(e: SocketTimeoutException){
+                    Log.e("Home", e.toString())
+                    return@launch
+                }catch(e: Exception){
+                    Log.e("Home", e.toString())
+                    return@launch
+                }
+
+                withContext(Dispatchers.Main){
+                    val notifBuilder = NotificationCompat.Builder(requireContext())
+                        .setContentTitle("New Product")
+                        .setContentText("New Product has been added.")
+                        .setSmallIcon(R.drawable.iani)
+                        .setAutoCancel(true)
+
+                    val managerCompat = NotificationManagerCompat.from(requireContext())
+                        .notify(1, notifBuilder.build())
+                }
+                delay(1000)
+            }while(isRequestingNotification)
+
         }
         CoroutineScope(Dispatchers.IO).launch {
             val products = try{ RetrofitInstance.retro.getCartItems("Bearer $token") }

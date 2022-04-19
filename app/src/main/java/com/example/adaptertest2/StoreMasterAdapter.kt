@@ -7,13 +7,19 @@ import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat.createDeviceProtectedStorageContext
 import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.Serializable
+import java.net.SocketTimeoutException
 
 class StoreMasterAdapter(private val list: MutableList<StoreMasterItem>): RecyclerView.Adapter<StoreMasterAdapter.Holder>() {
     class Holder(itemView: View): RecyclerView.ViewHolder(itemView)
@@ -25,11 +31,74 @@ class StoreMasterAdapter(private val list: MutableList<StoreMasterItem>): Recycl
     override fun onBindViewHolder(holder: Holder, position: Int) {
         val current = list[position]
         holder.itemView.apply {
+            val db = UserDatabase(context)
+            val token = db.getToken()
             val name = findViewById<TextView>(R.id.storeName)
             val storeCard = findViewById<CardView>(R.id.storeCard)
             val coopId = current.farmers_cooperative_id
             val coopNameView = findViewById<TextView>(R.id.coopName)
             val coopName = coopId.split("|")[1]
+            val follow = findViewById<Button>(R.id.follow)
+            val alerts = RequestAlerts(context)
+
+            if(current.can_be_follow){
+                follow.text = "Follow"
+            }else{
+                follow.text = "Unfollow"
+            }
+            follow.setOnClickListener {
+                if(current.can_be_follow) {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        val followResponse = try {
+                            RetrofitInstance.retro.followStore("Bearer $token", current.id)
+                        } catch (e: SocketTimeoutException) {
+                            withContext(Dispatchers.Main) {
+                                alerts.showSocketTimeOutAlert()
+                            }
+                            return@launch
+                        } catch (e: Exception) {
+                            withContext(Dispatchers.Main) {
+                                alerts.noInternetAlert()
+                            }
+                            return@launch
+                        }
+
+                        withContext(Dispatchers.Main) {
+                            if (followResponse.code() == 200 && followResponse.headers()
+                                    .contains(Pair("content-type", "application/json"))
+                            ) {
+                                follow.text = "Unfollow"
+                                current.can_be_follow = false
+                            }
+                        }
+                    }
+                }else{
+                    CoroutineScope(Dispatchers.IO).launch {
+                        val followResponse = try {
+                            RetrofitInstance.retro.unfollowStore("Bearer $token", current.id)
+                        } catch (e: SocketTimeoutException) {
+                            withContext(Dispatchers.Main) {
+                                alerts.showSocketTimeOutAlert()
+                            }
+                            return@launch
+                        } catch (e: Exception) {
+                            withContext(Dispatchers.Main) {
+                                alerts.noInternetAlert()
+                            }
+                            return@launch
+                        }
+
+                        withContext(Dispatchers.Main) {
+                            if (followResponse.code() == 200 && followResponse.headers()
+                                    .contains(Pair("content-type", "application/json"))
+                            ) {
+                                follow.text = "Follow"
+                                current.can_be_follow = true
+                            }
+                        }
+                    }
+                }
+            }
 
             coopNameView.text = coopName
             name.text = current.store_name

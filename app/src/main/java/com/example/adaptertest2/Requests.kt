@@ -26,7 +26,7 @@ interface Requests {
     suspend fun logout(@Header("Authorization") token: String): Response<ResponseBody>
 
     @GET("/api/store-master")
-    suspend fun getStoreMaster(): StoreMaster
+    suspend fun getStoreMaster(@Header("Authorization") token: String): StoreMaster
 
     @GET("/api/products")
     suspend fun getProducts(): Product
@@ -90,4 +90,13 @@ interface Requests {
 
     @GET("/api/my-store-orders")
     suspend fun getMyStoreOrders(@Header("Authorization") token: String): StoreOrders
+
+    @POST("/api/follow/{store}")
+    suspend fun followStore(@Header("Authorization") token: String, @Path("store") store: Int): Response<ResponseBody>
+
+    @POST("/api/unfollow/{store}")
+    suspend fun unfollowStore(@Header("Authorization") token: String, @Path("store") store: Int): Response<ResponseBody>
+
+    @GET("/api/notifications")
+    suspend fun getNotifications(@Header("Authorization") token: String): Response<ResponseBody>
 }

@@ -24,5 +24,6 @@ data class StoreMasterItem(
     val phone_verified_at: String,
     val store_name: String,
     val type: String,
-    val updated_at: String
+    val updated_at: String,
+    var can_be_follow: Boolean
 )

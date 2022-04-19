@@ -53,6 +53,8 @@ class Products : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val db = UserDatabase(requireContext())
+        val token = db.getToken()
         val storeMasterRecycler = view.findViewById<RecyclerView>(R.id.storeMasterRecycler)
         val storeMasterAdapter = StoreMasterAdapter(mutableListOf())
         storeMasterRecycler.adapter = storeMasterAdapter
@@ -63,7 +65,7 @@ class Products : Fragment() {
         val alerts = RequestAlerts(requireContext())
         val noStores = view.findViewById<LinearLayout>(R.id.noStores)
         CoroutineScope(Dispatchers.IO).launch {
-            val storeMaster = try{ RetrofitInstance.retro.getStoreMaster() }
+            val storeMaster = try{ RetrofitInstance.retro.getStoreMaster("Bearer $token") }
             catch(e: SocketTimeoutException){
                 withContext(Dispatchers.Main){
                     progress.dismiss()

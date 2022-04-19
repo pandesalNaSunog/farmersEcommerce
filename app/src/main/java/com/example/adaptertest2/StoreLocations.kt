@@ -58,7 +58,8 @@ class StoreLocations : AppCompatActivity(), OnMapReadyCallback {
         mMap = googleMap
 
 
-
+        val db = UserDatabase(this)
+        val token = db.getToken()
         val locationManager = this.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         val gpsStatus = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
         val client = LocationServices.getFusedLocationProviderClient(this)
@@ -113,7 +114,7 @@ class StoreLocations : AppCompatActivity(), OnMapReadyCallback {
             var marker: Marker? = null
 
             CoroutineScope(Dispatchers.IO).launch {
-                val storeMaster = try{ RetrofitInstance.retro.getStoreMaster() }
+                val storeMaster = try{ RetrofitInstance.retro.getStoreMaster("Bearer $token") }
                 catch(e: SocketTimeoutException){
                     withContext(Dispatchers.Main){
                         progress.dismiss()

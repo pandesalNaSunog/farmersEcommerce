@@ -58,6 +58,16 @@
                     android:layout_height="wrap_content"
                     android:text="coop name"
                     android:textStyle="italic" />
+
+                <android.widget.Button
+                    android:id="@+id/follow"
+                    android:layout_marginTop="10sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="30sp"
+                    android:text="Follow"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    android:background="@drawable/green_solid_btn"/>
             </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
