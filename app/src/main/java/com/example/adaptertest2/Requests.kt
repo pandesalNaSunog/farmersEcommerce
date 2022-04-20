@@ -98,5 +98,5 @@ interface Requests {
     suspend fun unfollowStore(@Header("Authorization") token: String, @Path("store") store: Int): Response<ResponseBody>
 
     @GET("/api/notifications")
-    suspend fun getNotifications(@Header("Authorization") token: String): Response<ResponseBody>
+    suspend fun getNotifications(@Header("Authorization") token: String): Notification
 }

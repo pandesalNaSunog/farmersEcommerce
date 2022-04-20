@@ -15,6 +15,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityCompat.getSystemService
 import androidx.core.app.ActivityCompat.requestPermissions
@@ -25,6 +26,8 @@ import androidx.core.view.isVisible
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.GsonBuilder
+import com.google.gson.JsonParser
 import kotlinx.coroutines.*
 import okhttp3.Dispatcher
 import retrofit2.HttpException
@@ -44,7 +47,7 @@ class Home : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
-
+    var isRequestingNotification = true
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -64,7 +67,7 @@ class Home : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        var isRequestingNotification = true
+
         val noProducts = view.findViewById<LinearLayout>(R.id.noProducts)
         val db = UserDatabase(requireContext())
         val token = db.getToken()
@@ -124,14 +127,22 @@ class Home : Fragment() {
                 }
 
                 withContext(Dispatchers.Main){
-                    val notifBuilder = NotificationCompat.Builder(requireContext())
-                        .setContentTitle("New Product")
-                        .setContentText("New Product has been added.")
-                        .setSmallIcon(R.drawable.iani)
-                        .setAutoCancel(true)
+                    for(i in notifications.indices) {
+                        val notifBuilder = NotificationCompat.Builder(requireContext(),"My Notification")
+                        notifBuilder.setContentTitle("New Product")
+                        notifBuilder.setContentText(notifications[i].data.message)
+                        notifBuilder.setSmallIcon(R.drawable.iani)
+                        notifBuilder.setAutoCancel(true)
 
-                    val managerCompat = NotificationManagerCompat.from(requireContext())
-                        .notify(1, notifBuilder.build())
+                        val managerCompat = NotificationManagerCompat.from(requireContext())
+                        managerCompat.notify(i + 1, notifBuilder.build())
+
+                        Toast.makeText(requireContext(), "New Product Added", Toast.LENGTH_LONG).show()
+                    }
+
+//                    val gson = GsonBuilder().setPrettyPrinting().create()
+//                    val json = gson.toJson(JsonParser.parseString(notifications.body()?.string()))
+//                    Log.e("Home", json)
                 }
                 delay(1000)
             }while(isRequestingNotification)
@@ -170,6 +181,11 @@ class Home : Fragment() {
                 return@launch
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        isRequestingNotification = false
     }
 
     companion object {
