@@ -99,4 +99,10 @@ interface Requests {
 
     @GET("/api/notifications")
     suspend fun getNotifications(@Header("Authorization") token: String): Notification
+
+    @POST("/api/update-price")
+    suspend fun updatePrice(@Header("Authorization") token: String, @Body request: RequestBody): Response<ResponseBody>
+
+    @POST("/api/forgot-password")
+    suspend fun forgotPassword(@Body request: RequestBody): Response<ResponseBody>
 }

@@ -12,6 +12,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.gson.GsonBuilder
+import com.google.gson.JsonParser
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -41,10 +43,82 @@ class SellerProductAdapter(private val list: MutableList<ProductItemX>): Recycle
             val name = findViewById<TextView>(R.id.name)
             val quantity = findViewById<TextView>(R.id.quantity)
             val updateQuantity = findViewById<Button>(R.id.updateQuantity)
+            val updatePrice = findViewById<Button>(R.id.updatePrice)
             price.text = "PHP ${current.price}"
             Glide.with(context).load("https://yourzaj.xyz/${current.image}").into(image)
             name.text = current.name
             quantity.text = "Qty: ${current.quantity}"
+
+            updatePrice.setOnClickListener {
+                val updatePriceAlert = AlertDialog.Builder(context)
+                val updatePriceAlertView = LayoutInflater.from(context).inflate(R.layout.update_product_price, null)
+                updatePriceAlert.setView(updatePriceAlertView)
+                val updatePriceAlertShow = updatePriceAlert.show()
+
+                val newPrice = updatePriceAlertView.findViewById<EditText>(R.id.newPrice)
+                val confirm = updatePriceAlertView.findViewById<Button>(R.id.confirm)
+
+                confirm.setOnClickListener {
+                    Log.e("jkladjfaf", current.id.toString())
+                    if(newPrice.text.isEmpty()){
+                        newPrice.error = "Please fill out this field"
+                    }else{
+                        AlertDialog.Builder(context)
+                            .setTitle("Confirm")
+                            .setMessage("Change ${current.name}'s price to PHP ${newPrice.text}?")
+                            .setPositiveButton("YES") {_,_->
+                                val progressBar = ProgressBar()
+                                val alerts = RequestAlerts(context)
+
+                                val progress = progressBar.showProgressBar(context, R.layout.loading, "Please Wait...", R.id.progressText)
+
+                                val jsonObject = JSONObject()
+                                jsonObject.put("product_id", current.id)
+                                jsonObject.put("new_price", newPrice.text.toString())
+                                val request = jsonObject.toString().toRequestBody("application/json".toMediaTypeOrNull())
+                                CoroutineScope(Dispatchers.IO).launch {
+                                    val updatePriceResponse = try{ RetrofitInstance.retro.updatePrice("Bearer $token", request) }
+                                    catch(e: SocketTimeoutException){
+                                        withContext(Dispatchers.Main){
+                                            progress.dismiss()
+                                            alerts.showSocketTimeOutAlert()
+                                        }
+                                        return@launch
+                                    }catch(e: Exception){
+                                        withContext(Dispatchers.Main){
+                                            progress.dismiss()
+                                            alerts.noInternetAlert()
+                                        }
+                                        return@launch
+                                    }
+
+                                    withContext(Dispatchers.Main){
+                                        progress.dismiss()
+                                        if(updatePriceResponse.isSuccessful){
+                                            price.text = "PHP ${newPrice.text}"
+                                            AlertDialog.Builder(context)
+                                                .setTitle("Success")
+                                                .setMessage("Product price updated successfully.")
+                                                .setPositiveButton("OK", null)
+                                                .show()
+                                            updatePriceAlertShow.dismiss()
+                                        }else{
+                                            Log.e("SellerProductAdapter", updatePriceResponse.errorBody()!!.string())
+                                            AlertDialog.Builder(context)
+                                                .setTitle("Error")
+                                                .setMessage("Something went wrong.")
+                                                .setPositiveButton("OK", null)
+                                                .show()
+                                            updatePriceAlertShow.dismiss()
+                                        }
+                                    }
+                                }
+                            }.setNegativeButton("NO", null)
+                            .show()
+
+                    }
+                }
+            }
 
             updateQuantity.setOnClickListener {
                 var quantityValue = 0

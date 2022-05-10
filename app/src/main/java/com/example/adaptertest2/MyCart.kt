@@ -3,6 +3,7 @@ package com.example.adaptertest2
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.widget.Button
 import android.widget.EditText
@@ -129,7 +130,8 @@ class MyCart : AppCompatActivity() {
 
                         withContext(Dispatchers.Main){
                             prog.dismiss()
-                            if(checkoutResponse.code() == 200 && checkoutResponse.headers().contains(Pair("content-type","application/json"))){
+                           if(checkoutResponse.code() == 200 && checkoutResponse.headers().contains(Pair("content-type","application/json"))){
+
                                 AlertDialog.Builder(this@MyCart)
                                     .setTitle("Success")
                                     .setMessage("Your order has been submitted.")
@@ -139,14 +141,11 @@ class MyCart : AppCompatActivity() {
                                 cartAdapter.deleteAll()
                             }else{
                                 alert.somethingWentWrongAlert()
+                                Log.e("MyCart",checkoutResponse.errorBody()!!.string())
                             }
                         }
                     }
                 }
-
-
-
-
             }
         }
 

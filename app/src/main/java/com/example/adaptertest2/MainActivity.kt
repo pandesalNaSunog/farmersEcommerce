@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.util.Patterns
+import android.view.LayoutInflater
 import android.widget.Button
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
@@ -34,6 +35,61 @@ class MainActivity : AppCompatActivity() {
         val email = findViewById<EditText>(R.id.email)
         val password = findViewById<EditText>(R.id.password)
         val signup = findViewById<Button>(R.id.signup)
+        val forgotPassword = findViewById<Button>(R.id.forgotPassword)
+
+        forgotPassword.setOnClickListener {
+            val forgotPasswordAlert = AlertDialog.Builder(this)
+            val alertView = LayoutInflater.from(this).inflate(R.layout.forgot_password, null)
+            forgotPasswordAlert.setView(alertView)
+            forgotPasswordAlert.show()
+
+            val forgotPasswordEmail = alertView.findViewById<EditText>(R.id.email)
+            val confirm = alertView.findViewById<Button>(R.id.confirm)
+
+            confirm.setOnClickListener {
+                if(forgotPasswordEmail.text.isEmpty()){
+                    forgotPasswordEmail.error = "Please fill out this field."
+                }else if(!Patterns.EMAIL_ADDRESS.matcher(forgotPasswordEmail.text.toString()).matches()){
+                    forgotPasswordEmail.error = "Invalid email."
+                }else{
+
+                    val progress = ProgressBar()
+                    val showProgress = progress.showProgressBar(this,R.layout.loading, "Please Wait...", R.id.progressText)
+                    val reqAlerts = RequestAlerts(this)
+                    val jsonObject = JSONObject()
+                    jsonObject.put("email", forgotPasswordEmail.text.toString())
+                    val request = jsonObject.toString().toRequestBody("application/json".toMediaTypeOrNull())
+
+                    CoroutineScope(Dispatchers.IO).launch {
+                        val forgotPasswordResponse = try{ RetrofitInstance.retro.forgotPassword(request) }
+                        catch(e: SocketTimeoutException){
+                            withContext(Dispatchers.Main){
+                                showProgress.dismiss()
+                                reqAlerts.showSocketTimeOutAlert()
+                            }
+                            return@launch
+                        }catch(e: Exception){
+                            withContext(Dispatchers.Main){
+                                showProgress.dismiss()
+                                reqAlerts.noInternetAlert()
+                            }
+                            return@launch
+                        }
+
+                        withContext(Dispatchers.Main){
+                            showProgress.dismiss()
+                            if(forgotPasswordResponse.isSuccessful){
+                                AlertDialog.Builder(this@MainActivity)
+                                    .setTitle("Success")
+                                    .setMessage("Password reset link has been sent to your email.")
+                                    .setPositiveButton("OK", null)
+                                    .show()
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
 
 

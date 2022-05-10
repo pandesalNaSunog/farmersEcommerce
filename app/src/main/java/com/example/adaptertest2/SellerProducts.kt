@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Base64
@@ -14,6 +15,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
@@ -58,7 +60,8 @@ class SellerProducts : Fragment() {
     var image = ""
     private lateinit var alert: AlertDialog.Builder
     private lateinit var showAlert: AlertDialog
-
+    private lateinit var productImage: ImageView
+    private lateinit var uri: Uri
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -77,8 +80,6 @@ class SellerProducts : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-
         val db = UserDatabase(requireContext())
         val token = db.getToken()
         val productRecycler = view.findViewById<RecyclerView>(R.id.productRecycler)
@@ -129,7 +130,128 @@ class SellerProducts : Fragment() {
             val quantity = alertView.findViewById<EditText>(R.id.quantity)
             val chooseImage = alertView.findViewById<Button>(R.id.chooseImage)
             val categorySelector = alertView.findViewById<Button>(R.id.categorySelector)
+            val confirm = alertView.findViewById<Button>(R.id.confirm)
+            productImage = alertView.findViewById(R.id.image)
 
+            confirm.setOnClickListener {
+                if (productName.text.isEmpty()) {
+                    productName.error = "Please fill out this field."
+                } else if (productCategory.text.isEmpty()) {
+                    productCategory.error = "Please fill out this field."
+                } else if (price.text.isEmpty()) {
+                    price.error = "Please fill out this field."
+                } else if (desc.text.isEmpty()) {
+                    desc.error = "Please fill out this field."
+                } else if (quantity.text.isEmpty()) {
+                    quantity.error = "Please fill out this field."
+                } else if (image == "") {
+                    AlertDialog.Builder(requireContext())
+                        .setTitle("Error")
+                        .setMessage("Please choose a product image")
+                        .setPositiveButton("OK", null)
+                        .show()
+                } else {
+                    name = productName.text.toString()
+                    category = productCategory.text.toString()
+                    sprice = price.text.toString().toDouble()
+                    sdescription = desc.text.toString()
+                    squantity = quantity.text.toString().toInt()
+
+                    val progressbar = ProgressBar()
+                    val progress = progressbar.showProgressBar(
+                        requireContext(),
+                        R.layout.loading,
+                        "Adding Product...",
+                        R.id.progressText
+                    )
+                    val db = UserDatabase(requireContext())
+                    val token = db.getToken()
+
+                    val alerts = RequestAlerts(requireContext())
+
+                    try {
+                        val jsonObject = JSONObject()
+                        jsonObject.put("name", name)
+                        jsonObject.put("image", image)
+                        jsonObject.put("category", category)
+                        jsonObject.put("price", sprice)
+                        jsonObject.put("description", sdescription)
+                        jsonObject.put("quantity", squantity)
+
+                        val request = jsonObject.toString()
+                            .toRequestBody("application/json".toMediaTypeOrNull())
+
+                        CoroutineScope(Dispatchers.IO).launch {
+                            val addProductResponse = try {
+                                RetrofitInstance.retro.addProduct("Bearer $token", request)
+                            } catch (e: SocketTimeoutException) {
+                                withContext(Dispatchers.Main) {
+                                    progress.dismiss()
+
+                                    alerts.showSocketTimeOutAlert()
+                                }
+                                return@launch
+                            } catch (e: Exception) {
+                                withContext(Dispatchers.Main) {
+                                    progress.dismiss()
+
+                                    alerts.noInternetAlert()
+                                }
+                                return@launch
+                            }
+
+                            withContext(Dispatchers.Main) {
+                                progress.dismiss()
+                                if (addProductResponse.code() == 200 && addProductResponse.headers()
+                                        .contains(Pair("content-type", "application/json"))
+                                ) {
+                                    val gson = GsonBuilder().setPrettyPrinting().create()
+                                    val json = gson.toJson(
+                                        JsonParser.parseString(
+                                            addProductResponse.body()?.string()
+                                        )
+                                    )
+                                    Log.e("seller", json)
+
+                                    val jsonResponse = JSONTokener(json).nextValue() as JSONObject
+                                    val productJson = jsonResponse.getJSONObject("product")
+                                    val thisId = productJson.getInt("id")
+                                    val thisImage = productJson.getString("image")
+                                    showAlert.dismiss()
+                                    val product = ProductItemX(
+                                        category,
+                                        null,
+                                        sdescription,
+                                        thisId,
+                                        thisImage,
+                                        name,
+                                        sprice.toString(),
+                                        squantity.toString(),
+                                        null,
+                                        null,
+                                        null
+                                    )
+                                    productAdapter.addItem(product)
+                                    AlertDialog.Builder(requireContext())
+                                        .setTitle("Success!")
+                                        .setMessage("Product has been added.")
+                                        .setPositiveButton("OK", null)
+                                        .show()
+                                } else {
+                                    showAlert.dismiss()
+                                    AlertDialog.Builder(requireContext())
+                                        .setTitle("Error")
+                                        .setMessage("Something went wrong. Please try again")
+                                        .setPositiveButton("OK", null)
+                                        .show()
+                                }
+                            }
+                        }
+                    } catch (e: IOException) {
+                        e.printStackTrace()
+                    }
+                }
+            }
             categorySelector.setOnClickListener {
                 val categoryBottomSheet = BottomSheetDialog(requireContext())
                 val categoryBottomSheetView = LayoutInflater.from(requireContext()).inflate(R.layout.category_bottomsheet,null)
@@ -181,26 +303,11 @@ class SellerProducts : Fragment() {
 
 
             chooseImage.setOnClickListener {
-                if(productName.text.isEmpty()){
-                    productName.error = "Please fill out this field."
-                }else if(productCategory.text.isEmpty()){
-                    productCategory.error = "Please fill out this field."
-                }else if(price.text.isEmpty()){
-                    price.error = "Please fill out this field."
-                }else if(desc.text.isEmpty()){
-                    desc.error = "Please fill out this field."
-                }else if(quantity.text.isEmpty()){
-                    quantity.error = "Please fill out this field."
-                }else{
-                    name = productName.text.toString()
-                    category = productCategory.text.toString()
-                    sprice = price.text.toString().toDouble()
-                    sdescription = desc.text.toString()
-                    squantity = quantity.text.toString().toInt()
+
                     val intent = Intent(Intent.ACTION_PICK)
                     intent.type = "image/*"
                     startActivityForResult(intent, 100)
-                }
+
             }
             showAlert = alert.show()
         }
@@ -210,86 +317,17 @@ class SellerProducts : Fragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        val progressbar = ProgressBar()
-
-        val progress = progressbar.showProgressBar(requireContext(),R.layout.loading,"Adding Product...", R.id.progressText)
-        val db = UserDatabase(requireContext())
-        val token = db.getToken()
-
-        val alerts = RequestAlerts(requireContext())
-
         if(requestCode == 100 && resultCode == AppCompatActivity.RESULT_OK && data != null){
-            val uri = data.data
+            uri = data.data!!
+            productImage.setImageURI(uri)
 
-            try{
-                val bitmap = MediaStore.Images.Media.getBitmap(activity?.contentResolver,uri)
-                val stream = ByteArrayOutputStream()
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 50, stream)
-                val bytes: ByteArray = stream.toByteArray()
+            val bitmap =
+                MediaStore.Images.Media.getBitmap(activity?.contentResolver, uri)
+            val stream = ByteArrayOutputStream()
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 50, stream)
+            val bytes: ByteArray = stream.toByteArray()
 
-                image = Base64.encodeToString(bytes, Base64.DEFAULT)
-
-
-                val jsonObject = JSONObject()
-                jsonObject.put("name", name)
-                jsonObject.put("image", image)
-                jsonObject.put("category", category)
-                jsonObject.put("price", sprice)
-                jsonObject.put("description", sdescription)
-                jsonObject.put("quantity", squantity)
-
-                val request = jsonObject.toString().toRequestBody("application/json".toMediaTypeOrNull())
-
-                CoroutineScope(Dispatchers.IO).launch {
-                    val addProductResponse = try{ RetrofitInstance.retro.addProduct("Bearer $token",request) }
-                    catch(e: SocketTimeoutException){
-                        withContext(Dispatchers.Main){
-                            progress.dismiss()
-
-                            alerts.showSocketTimeOutAlert()
-                        }
-                        return@launch
-                    }catch(e: Exception){
-                        withContext(Dispatchers.Main){
-                            progress.dismiss()
-
-                            alerts.noInternetAlert()
-                        }
-                        return@launch
-                    }
-
-                    withContext(Dispatchers.Main){
-                        progress.dismiss()
-                        if(addProductResponse.code() == 200 && addProductResponse.headers().contains(Pair("content-type","application/json"))){
-                            val gson = GsonBuilder().setPrettyPrinting().create()
-                            val json = gson.toJson(JsonParser.parseString(addProductResponse.body()?.string()))
-                            Log.e("seller", json)
-
-                            val jsonResponse = JSONTokener(json).nextValue() as JSONObject
-                            val productJson = jsonResponse.getJSONObject("product")
-                            val thisId = productJson.getInt("id")
-                            val thisImage = productJson.getString("image")
-                            showAlert.dismiss()
-                            val product = ProductItemX(category,null,sdescription,thisId,thisImage,name,sprice.toString(),squantity.toString(),null,null,null)
-                            productAdapter.addItem(product)
-                            AlertDialog.Builder(requireContext())
-                                .setTitle("Success!")
-                                .setMessage("Product has been added.")
-                                .setPositiveButton("OK", null)
-                                .show()
-                        }else{
-                            showAlert.dismiss()
-                            AlertDialog.Builder(requireContext())
-                                .setTitle("Error")
-                                .setMessage("Something went wrong. Please try again")
-                                .setPositiveButton("OK", null)
-                                .show()
-                        }
-                    }
-                }
-            }catch(e: IOException){
-                e.printStackTrace()
-            }
+            image = Base64.encodeToString(bytes, Base64.DEFAULT)
         }
     }
 

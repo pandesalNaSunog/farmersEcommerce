@@ -129,7 +129,7 @@ class Home : Fragment() {
                 withContext(Dispatchers.Main){
                     for(i in notifications.indices) {
                         val notifBuilder = NotificationCompat.Builder(requireContext(),"My Notification")
-                        notifBuilder.setContentTitle("New Product")
+                        notifBuilder.setContentTitle("Notification")
                         notifBuilder.setContentText(notifications[i].data.message)
                         notifBuilder.setSmallIcon(R.drawable.iani)
                         notifBuilder.setAutoCancel(true)
