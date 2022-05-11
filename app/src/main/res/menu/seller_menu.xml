@@ -9,4 +9,8 @@
     <item android:title="My Store Orders"
         android:icon="@drawable/ic_baseline_receipt_24"
         android:id="@+id/myStoreOrders2"/>
+    <item android:title="Sales Chart"
+        android:icon="@drawable/ic_baseline_pie_chart_24"
+        android:id="@+id/salesReports"/>
+
 </menu>

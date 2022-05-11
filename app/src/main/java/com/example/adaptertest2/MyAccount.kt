@@ -122,11 +122,48 @@ class MyAccount : Fragment() {
 
             withContext(Dispatchers.Main){
                 progressBar.dismiss()
-                progressBar.dismiss()
                 name.text = profile.name
                 email.text = profile.email
                 address.text = profile.address
                 Glide.with(requireContext()).load("https://yourzaj.xyz/${profile.image}").error(R.drawable.ic_baseline_account_circle_24).into(profileImage)
+                if(profile.email_verified_at == null){
+                    AlertDialog.Builder(requireContext())
+                        .setTitle("Verify Email")
+                        .setMessage("Your email has not been verified yet.")
+                        .setPositiveButton("verify email"){_,_->
+                            progressBar = progress.showProgressBar(requireContext(),R.layout.loading,"Please wait", R.id.progressText)
+                            CoroutineScope(Dispatchers.IO).launch {
+                                val verificationResponse = try{ RetrofitInstance.retro.emailVerification("Bearer $token") }
+                                catch(e: SocketTimeoutException){
+                                    withContext(Dispatchers.Main){
+                                        progressBar.dismiss()
+                                        alerts.showSocketTimeOutAlert()
+                                    }
+                                    return@launch
+                                }catch(e: SocketTimeoutException){
+                                    withContext(Dispatchers.Main){
+                                        progressBar.dismiss()
+                                        alerts.showSocketTimeOutAlert()
+                                    }
+                                    return@launch
+                                }
+                                withContext(Dispatchers.Main){
+                                    progressBar.dismiss()
+                                    if(verificationResponse.isSuccessful){
+                                        AlertDialog.Builder(requireContext())
+                                            .setTitle("Success")
+                                            .setMessage("Verification link has been to your email.")
+                                            .setPositiveButton("OK", null)
+                                            .show()
+                                    }else{
+                                        alerts.somethingWentWrongAlert()
+                                        Log.e("VerificationResponse", verificationResponse.errorBody()!!.string())
+                                    }
+                                }
+                            }
+                        }
+                        .show()
+                }
             }
         }
 

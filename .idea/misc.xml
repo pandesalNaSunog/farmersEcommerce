@@ -7,6 +7,8 @@
         <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/drawable/green_solid_btn.xml" value="0.196" />
         <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/drawable/green_stroke_btn.xml" value="0.196" />
         <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/drawable/ic_baseline_account_dark_circle_24.xml" value="0.263" />
+        <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/drawable/ic_baseline_menu_24.xml" value="0.2255" />
+        <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/drawable/ic_baseline_pie_chart_24.xml" value="0.2255" />
         <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/drawable/ic_baseline_show_chart_24.xml" value="0.276" />
         <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/drawable/nav_icons.xml" value="0.221" />
         <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/drawable/no_corner_radius_green_solid_btn.xml" value="0.2845" />
@@ -20,6 +22,7 @@
         <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/activity_navigation.xml" value="0.25" />
         <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/activity_product_viewer.xml" value="0.22" />
         <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/activity_products_per_category.xml" value="0.23958333333333334" />
+        <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/activity_sales_chart.xml" value="0.21875" />
         <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/activity_searched_products.xml" value="0.35104166666666664" />
         <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/activity_select_user_type.xml" value="0.22" />
         <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/activity_seller_navigation.xml" value="0.21927083333333333" />
@@ -44,6 +47,7 @@
         <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/fragment_my_store_orders.xml" value="0.18854166666666666" />
         <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/fragment_products.xml" value="0.3151041666666667" />
         <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/fragment_sales.xml" value="0.21354166666666666" />
+        <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/fragment_sales_reports.xml" value="0.33" />
         <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/fragment_second.xml" value="0.2140625" />
         <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/fragment_second2.xml" value="0.2140625" />
         <entry key="..\:/Users/Jem/AndroidStudioProjects/AdapterTest2/app/src/main/res/layout/fragment_seller_products.xml" value="0.21927083333333333" />

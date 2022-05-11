@@ -105,4 +105,10 @@ interface Requests {
 
     @POST("/api/forgot-password")
     suspend fun forgotPassword(@Body request: RequestBody): Response<ResponseBody>
+
+    @POST("/api/send-email-verification-link")
+    suspend fun emailVerification(@Header("Authorization") token: String): Response<ResponseBody>
+
+    @POST("/api/get-report")
+    suspend fun getReport(@Header("Authorization") token: String, @Body request: RequestBody): SalesReport
 }
